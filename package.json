@@ -1,0 +1,42 @@
+{
+  "name": "stanford-tagger.js",
+  "version": "1.0.0",
+  "description": "The Stanford Part-Of-Speech Log-Linear tagger ported to JavaScript (no background service needed)",
+  "main": "lib.js",
+  "scripts": {
+  },
+  "files": [
+    "lib.js",
+    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.js",
+    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.js.map",
+    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.meta.js",
+    "models/",
+    "README.md",
+    "LICENSE",
+    "parser.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ojj11/StanfordPOSTagger.git"
+  },
+  "keywords": [
+    "nlp",
+    "pos",
+    "part of speech",
+    "natural language processing"
+  ],
+  "author": "Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer",
+  "license": "GPL-2.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ojj11/StanfordPOSTagger/issues"
+  },
+  "homepage": "https://github.com/ojj11/StanfordPOSTagger#readme",
+  "devDependencies": {
+    "source-map-support": "0.5.16"
+  },
+  "dependencies": {
+    "kotlin": "^1.3.72",
+    "kotlinx-serialization-kotlinx-serialization-runtime": "^0.20.0",
+    "kotlinx-serialization-kotlinx-serialization-cbor": "^0.20.0"
+  }
+}
