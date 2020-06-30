@@ -37,11 +37,10 @@ import java.io.Serializable
  */
 open class Extractor (
         open val position: Int = Int.MAX_VALUE,
-        val isDynamic: Boolean = false
+        val isTag: Boolean = false
 ) : Serializable {
 
     companion object {
         private const val serialVersionUID = -4694133872973560083L
     }
-
 }

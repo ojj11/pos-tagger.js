@@ -14,23 +14,25 @@ class FeatureKey(
         private val value: String,
         private val tag: String?
 ) {
-
-    @kotlinx.serialization.Transient
-    private var hashCode = 0
-
     override fun toString() = "$num $value $tag"
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-           hashCode = arrayOf(num, value, tag).hashCode()
-        }
-        return hashCode
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as FeatureKey
+
+        if (num != other.num) return false
+        if (value != other.value) return false
+        if (tag != other.tag) return false
+
+        return true
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is FeatureKey) {
-            return false
-        }
-        return num == o.num && tag == o.tag && value == o.value
+    override fun hashCode(): Int {
+        var result = num
+        result = 31 * result + value.hashCode()
+        result = 31 * result + (tag?.hashCode() ?: 0)
+        return result
     }
 }

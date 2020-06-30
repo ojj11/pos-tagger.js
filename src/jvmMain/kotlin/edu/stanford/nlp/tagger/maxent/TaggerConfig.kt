@@ -260,7 +260,7 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
         }
 
         /** The directory in a jar file in which to find a tagger resource specified by jar:file  */
-        const val JAR_TAGGER_PATH = "/models/"
+        private const val JAR_TAGGER_PATH = "/models/"
 
         init {
             defaultValues["arch"] = ARCH

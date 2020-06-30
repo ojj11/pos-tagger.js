@@ -11,8 +11,4 @@ package edu.stanford.nlp.ling
 open class Word(word: String) : StringLabel(word), HasWord {
 
     override fun word() = value()
-
-    companion object {
-        private const val serialVersionUID = -4817252915997034058L
-    }
 }

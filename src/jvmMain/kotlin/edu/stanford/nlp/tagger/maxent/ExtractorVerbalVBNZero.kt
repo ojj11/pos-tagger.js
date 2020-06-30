@@ -9,7 +9,7 @@ package edu.stanford.nlp.tagger.maxent
  * @author Christopher Manning
  */
 @Suppress("unused")
-class ExtractorVerbalVBNZero(private val bound: Int) : DictionaryExtractor() {
+class ExtractorVerbalVBNZero(val bound: Int) : DictionaryExtractor() {
 
     override fun toString(): String {
         return "ExtractorVerbalVBNZero(bound=$bound)"

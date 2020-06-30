@@ -95,11 +95,6 @@ class WordTag(word: String?, tag: String?) : Label, HasWord, HasTag, Comparable<
         }
     }
 
-    companion object {
-        private const val DIVIDER = "/"
-        private const val serialVersionUID = -1859527239216813742L
-    }
-
     /**
      * Create a new `WordTag`.
      */

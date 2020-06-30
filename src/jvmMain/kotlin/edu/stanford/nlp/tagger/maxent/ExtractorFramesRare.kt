@@ -6,53 +6,18 @@ import edu.stanford.nlp.process.WordShapeClassifier
  * Superclass for rare word feature frames.  Provides some common functions.
  * Designed to be extended.
  */
+@Suppress("unused")
 internal open class RareExtractor : Extractor() {
     companion object {
         private const val serialVersionUID = -7682607870855426599L
     }
-} // end class RareExtractor
+}
 
 /** English-specific crude company name NER.  */
 @Suppress("unused")
-internal class CompanyNameDetector : Extractor() {
-    private val companyNameEnds: MutableSet<String?>
-    private fun companyNameEnd(s: String?): Boolean {
-        return companyNameEnds.contains(s)
-    }
-
+internal class CompanyNameDetector(val companyNameEnds: MutableSet<String?>) : Extractor() {
     companion object {
         private const val serialVersionUID = 21L
-    }
-
-    init {
-        companyNameEnds = HashSet()
-        companyNameEnds.add("Company")
-        companyNameEnds.add("COMPANY")
-        companyNameEnds.add("Co.")
-        companyNameEnds.add("Co") // at end of sentence in PTB
-        companyNameEnds.add("Cos.")
-        companyNameEnds.add("CO.")
-        companyNameEnds.add("COS.")
-        companyNameEnds.add("Corporation")
-        companyNameEnds.add("CORPORATION")
-        companyNameEnds.add("Corp.")
-        companyNameEnds.add("Corp") // at end of sentence in PTB
-        companyNameEnds.add("CORP.")
-        companyNameEnds.add("Incorporated")
-        companyNameEnds.add("INCORPORATED")
-        companyNameEnds.add("Inc.")
-        companyNameEnds.add("Inc") // at end of sentence in PTB
-        companyNameEnds.add("INC.")
-        companyNameEnds.add("Association")
-        companyNameEnds.add("ASSOCIATION")
-        companyNameEnds.add("Assn")
-        companyNameEnds.add("ASSN")
-        companyNameEnds.add("Limited")
-        companyNameEnds.add("LIMITED")
-        companyNameEnds.add("Ltd.")
-        companyNameEnds.add("LTD.")
-        companyNameEnds.add("L.P.")
-        // companyNameEnds.add("PLC"); // Other thing added at same time.
     }
 } // end class CompanyNameDetector
 
@@ -195,22 +160,17 @@ internal class ExtractorDash : Extractor() {
 @Suppress("unused")
 internal class ExtractorCWordSuff(val num: Int) : Extractor() {
 
-    override fun toString(): String {
-        return super.toString() + " size " + num
-    }
+    override fun toString() = super.toString() + " size " + num
 
     companion object {
         private const val serialVersionUID = 30L
     }
-
 }
 
 @Suppress("unused")
 internal class ExtractorCWordPref(val num: Int) : Extractor() {
 
-    override fun toString(): String {
-        return super.toString() + " size " + num
-    }
+    override fun toString() = super.toString() + " size " + num
 
     companion object {
         private const val serialVersionUID = 31L
@@ -219,7 +179,7 @@ internal class ExtractorCWordPref(val num: Int) : Extractor() {
 } // end class ExtractorCWordPref
 
 @Suppress("unused")
-internal class ExtractorsConjunction(private val extractor1: Extractor, private val extractor2: Extractor) : Extractor() {
+internal class ExtractorsConjunction(val extractor1: Extractor, val extractor2: Extractor) : Extractor() {
     private var privateIsLocal: Boolean = false
     private var privateIsDynamic: Boolean = false
 
@@ -230,8 +190,11 @@ internal class ExtractorsConjunction(private val extractor1: Extractor, private 
 }
 
 @Suppress("unused")
-internal class ExtractorWordShapeClassifier(position: Int, public val wsc: String?) : Extractor(position, false) {
-    private val wordShaper: Int = WordShapeClassifier.lookupShaper(wsc)
+internal class ExtractorWordShapeClassifier(position: Int, val wordShaper: Int) : Extractor(position, false) {
+
+    override fun toString(): String {
+        return super.toString() + " " + wordShaper
+    }
 
     companion object {
         private const val serialVersionUID = 101L
@@ -243,12 +206,47 @@ internal class ExtractorWordShapeClassifier(position: Int, public val wsc: Strin
  * This extractor extracts a conjunction of word shapes.
  */
 @Suppress("unused")
-internal class ExtractorWordShapeConjunction(val left: Int, val right: Int) : Extractor() {
-    private val wordShaper: Int = WordShapeClassifier.lookupShaper("chris4")
+internal class ExtractorWordShapeConjunction(val left: Int, val right: Int, val wordShaper: Int = WordShapeClassifier.lookupShaper("chris4")) : Extractor() {
     private val name: String = "ExtractorWordShapeConjunction($left,$right)"
 
     companion object {
         private const val serialVersionUID = -49L
     }
+}
 
+internal class CTBunkDictDetector(private val t1: String, private val n1: Int) : RareExtractor() {
+    companion object {
+        private const val serialVersionUID = 80L
+    }
+} // end class CTBunkDictDetector
+
+internal class ASBCunkDetector(private val t1: String, private val n1: Int) : RareExtractor() {
+    companion object {
+        private const val serialVersionUID = 57L
+    }
+} // end class ASBCunkDetector
+
+internal class CtbSufDetector(private val t1: String, n2: Int) : RareExtractor() {
+
+    override fun toString() = super.toString() + " tag=" + t1
+
+    companion object {
+        private const val serialVersionUID = 44L
+    }
+} // end class ctbPreDetector
+
+
+internal class CtbPreDetector(private val t1: String, n2: Int) : RareExtractor() {
+
+    override fun toString() = super.toString() + " tag=" + t1
+
+    companion object {
+        private const val serialVersionUID = 43L
+    }
+} // end class ctbPreDetector
+
+internal class PluralAcronymDetector : RareExtractor() {
+    companion object {
+        private const val serialVersionUID = 33L
+    }
 }

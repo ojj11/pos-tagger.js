@@ -70,8 +70,4 @@ abstract class ValueLabel protected constructor() : Label, Comparable<ValueLabel
     override fun compareTo(valueLabel: ValueLabel): Int {
         return value()!!.compareTo(valueLabel.value()!!)
     }
-
-    companion object {
-        private const val serialVersionUID = -1413303679077285530L
-    }
 }

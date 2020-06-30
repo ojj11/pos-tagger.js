@@ -4,7 +4,7 @@ import edu.stanford.nlp.util.HashIndex
 import edu.stanford.nlp.util.Index
 
 private fun defaultClosedTags(language: String): MutableSet<String> {
-    val closed = mutableSetOf<String>()
+    val closed = hashSetOf<String>()
     when {
         language.equals("english", ignoreCase = true) -> {
             closed.add(".")
@@ -145,18 +145,13 @@ class TTags constructor(
     private var index: Index<String> = HashIndex()
     private var isEnglish = language.equals("english", ignoreCase = true)
 
-    /** Caches values returned by deterministicallyExpandTags.
-     * This assumes that each word comes always with the same tag (wasn't proven false so far).
-     */
-    private val deterministicExpansionMemoizer: MutableMap<String?, Array<String?>> = HashMap()
-
     /**
      * Returns a list of all open class tags
      * @return set of open tags
      */
     fun getOpenTags(): Set<String?>? {
         if (openClassTags == null) {
-            openClassTags = mutableSetOf(*index.filter { it !in closedClassTags }.toTypedArray())
+            openClassTags = hashSetOf(*index.filter { it !in closedClassTags }.toTypedArray())
         }
         return openClassTags
     }
@@ -169,11 +164,13 @@ class TTags constructor(
     }
 
     fun getIndex(tag: String?): Int {
-        return index.indexOf(tag)
+        return index.indexOf(tag!!)
     }
 
     val size: Int
         get() = index.getSizeOverride()
+
+    private val tagCache = mutableMapOf<String?, Array<String?>>()
 
     /**
      * Deterministically adds other possible tags for words given observed tags.
@@ -189,40 +186,22 @@ class TTags constructor(
      * @return A superset of tags
      */
     fun deterministicallyExpandTags(tags: Array<String?>, word: String?): Array<String?> {
-        synchronized(deterministicExpansionMemoizer) {
-            val arrayOfStrings = deterministicExpansionMemoizer[word]
-            if (arrayOfStrings != null) return arrayOfStrings
-        }
         return if (isEnglish) {
-            val tl = ArrayList<String?>(tags.size + 2)
-            val yVBD = getIndex("VBD")
-            val yVBN = getIndex("VBN")
-            val yVBP = getIndex("VBP")
-            val yVB = getIndex("VB")
-            if (yVBD < 0 || yVBN < 0 || yVBP < 0 || yVB < 0) {
-                return tags
+            var tags = tagCache[word] ?: tags
+            if ("VBD" in tags && "VBN" !in tags) {
+                tags += "VBN"
             }
-            for (tag in tags) {
-                val y = getIndex(tag)
-                addIfAbsent(tl, tag)
-                when (y) {
-                    yVBD -> {
-                        addIfAbsent(tl, "VBN")
-                    }
-                    yVBN -> {
-                        addIfAbsent(tl, "VBD")
-                    }
-                    yVB -> {
-                        addIfAbsent(tl, "VBP")
-                    }
-                    yVBP -> {
-                        addIfAbsent(tl, "VB")
-                    }
-                }
-            } // end for i
-            val newtags = tl.toTypedArray()
-            synchronized(deterministicExpansionMemoizer) { deterministicExpansionMemoizer.put(word, newtags) }
-            newtags
+            if ("VBN" in tags && "VBD" !in tags) {
+                tags += "VBD"
+            }
+            if ("VB" in tags && "VBP" !in tags) {
+                tags += "VBP"
+            }
+            if ("VBN" in tags && "VB" !in tags) {
+                tags += "VB"
+            }
+            tagCache[word] = tags
+            tags
         } else {
             // no tag expansion for other languages currently
             tags
@@ -231,12 +210,5 @@ class TTags constructor(
 
     companion object {
         const val CLOSED_TAG_THRESHOLD = 40
-
-        // TODO: this should be in some kind of list util
-        private fun addIfAbsent(list: MutableList<String?>, item: String?) {
-            if (!list.contains(item)) {
-                list.add(item)
-            }
-        }
     }
 }

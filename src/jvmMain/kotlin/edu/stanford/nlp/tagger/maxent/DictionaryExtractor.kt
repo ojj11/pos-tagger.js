@@ -9,12 +9,6 @@ package edu.stanford.nlp.tagger.maxent
  * this type should be declared static.
  */
 open class DictionaryExtractor : Extractor() {
-    /**
-     * A pointer to the creating / owning tagger's dictionary.
-     */
-    @Transient
-    protected lateinit var dict: Dictionary
-
     companion object {
         private const val serialVersionUID = 692763177746328195L
     }

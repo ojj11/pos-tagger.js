@@ -4,8 +4,7 @@ package edu.stanford.nlp.tagger.maxent
  * The word in lower-cased version.
  */
 @Suppress("unused")
-internal class ExtractorWordLowerCase(public override val position: Int) : Extractor(position, false) {
-
+internal class ExtractorWordLowerCase(override val position: Int) : Extractor(position, false) {
     companion object {
         private const val serialVersionUID = -7847524200422095441L
     }
@@ -16,8 +15,7 @@ internal class ExtractorWordLowerCase(public override val position: Int) : Extra
  * namely leftPosition and leftPosition+1.
  */
 @Suppress("unused")
-internal class ExtractorTwoWords(public val leftPosition: Int) : Extractor(leftPosition, false) {
-
+internal class ExtractorTwoWords(val leftPosition: Int) : Extractor(leftPosition, false) {
     companion object {
         private const val serialVersionUID = -1034112287022504917L
     }
@@ -28,7 +26,6 @@ internal class ExtractorTwoWords(public val leftPosition: Int) : Extractor(leftP
  */
 @Suppress("unused")
 internal class ExtractorCWordNextWord : Extractor() {
-
     companion object {
         private const val serialVersionUID = -1034112287022504917L
     }
@@ -39,7 +36,6 @@ internal class ExtractorCWordNextWord : Extractor() {
  */
 @Suppress("unused")
 internal class ExtractorCWordPrevWord : Extractor() {
-
     companion object {
         private const val serialVersionUID = -6505213465359458926L
     }
@@ -51,7 +47,6 @@ internal class ExtractorCWordPrevWord : Extractor() {
 @Suppress("unused")
 internal class ExtractorPrevTwoTags : Extractor() {
     companion object {
-        //private static final int TWO_TAG_ALLOWANCE = 8;
         private const val serialVersionUID = 5124896556547424355L
     }
 }

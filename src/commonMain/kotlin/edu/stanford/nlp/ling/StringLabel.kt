@@ -41,8 +41,4 @@ open class StringLabel(private val str: String) : ValueLabel(), HasOffset {
     private fun setEndPosition(endPosition: Int) {
         this.endPosition = endPosition
     }
-
-    companion object {
-        private const val serialVersionUID = -4153619273767524247L
-    }
 }

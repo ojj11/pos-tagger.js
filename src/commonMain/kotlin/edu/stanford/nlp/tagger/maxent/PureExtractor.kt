@@ -37,9 +37,7 @@ import edu.stanford.nlp.util.Character
  * @version 1.0
  */
 @kotlinx.serialization.Serializable
-sealed class PureExtractor (
-        private val isDynamic: Boolean = false
-) {
+sealed class PureExtractor {
 
     open fun getPosition(): Int {
         return Int.MAX_VALUE
@@ -61,7 +59,7 @@ sealed class PureExtractor (
      * @return the number of positions to the left the extractor looks at (only tags, because words are fixed.)
      */
     open fun leftContext(): Int {
-        if (isDynamic) {
+        if (false) {
             if (getPosition() < 0) {
                 return -getPosition()
             }
@@ -73,7 +71,7 @@ sealed class PureExtractor (
      * @return the number of positions to the right the etxractor looks at (only tags, because words are fixed.)
      */
     open fun rightContext(): Int {
-        if (isDynamic) {
+        if (false) {
             if (getPosition() > 0) {
                 return getPosition()
             }
@@ -91,26 +89,52 @@ sealed class PureExtractor (
         return extract(h, h.pairs)
     }
 
-    open fun extract(h: History, pH: PairsHolder): String {
-        return (if (isDynamic) pH.getTag(h, getPosition()) else pH.getWord(h, getPosition()))
-    }
+    abstract fun extract(h: History, pH: PairsHolder): String
+
+    abstract fun isDynamic(): Boolean
+
+    open fun isLocal() = !isDynamic() && getPosition() == 0
 
     companion object {
         const val zeroSt = "0"
     }
-
-    open fun isDynamic() = isDynamic
-
-    open fun isLocal() = !isDynamic && getPosition() == 0
 }
 
 val cWord = PureExtractorBasic(0, false)
 
 @kotlinx.serialization.Serializable
 class PureExtractorBasic(
-        var privatePosition: Int = Int.MAX_VALUE,
-        var privateIsDynamic: Boolean = false
+        private var privatePosition: Int = Int.MAX_VALUE,
+        private var privateIsDynamic: Boolean = false
 ) : PureExtractor() {
+
+    override fun extract(h: History, pH: PairsHolder): String {
+        return if (isDynamic()) pH.getTag(h, getPosition()) else pH.getWord(h, getPosition())
+    }
+
+    /**
+     * @return the number of positions to the left the extractor looks at (only tags, because words are fixed.)
+     */
+    override fun leftContext(): Int {
+        if (privateIsDynamic) {
+            if (getPosition() < 0) {
+                return -getPosition()
+            }
+        }
+        return 0
+    }
+
+    /**
+     * @return the number of positions to the right the etxractor looks at (only tags, because words are fixed.)
+     */
+    override fun rightContext(): Int {
+        if (privateIsDynamic) {
+            if (getPosition() > 0) {
+                return getPosition()
+            }
+        }
+        return 0
+    }
 
     override fun getPosition() = privatePosition
 
@@ -139,7 +163,7 @@ class PureExtractorWordLowerCase(private var privatePosition: Int) : PureExtract
  * namely leftPosition and leftPosition+1.
  */
 @kotlinx.serialization.Serializable
-class PureExtractorTwoWords(private var privatePosition: Int) : PureExtractor() {
+class PureExtractorTwoWords(var privatePosition: Int) : PureExtractor() {
     override fun getPosition() = privatePosition
 
     override fun extract(h: History, pH: PairsHolder): String {
@@ -210,7 +234,7 @@ class PureExtractorPrevThreeTags : PureExtractor() {
     }
 
     override fun extract(h: History, pH: PairsHolder): String {
-        return pH.getTag(h, -1) + '!' + pH.getTag(h, -2) + '!' + pH.getTag(h, -3)
+        return """${pH.getTag(h, -1)}!${pH.getTag(h, -2)}!${pH.getTag(h, -3)}"""
     }
 
     override fun isLocal() = false
@@ -228,7 +252,7 @@ class PureExtractorNextTwoTags : PureExtractor() {
     }
 
     override fun extract(h: History, pH: PairsHolder): String {
-        return pH.getTag(h, 1) + '!' + pH.getTag(h, 2)
+        return """${pH.getTag(h, 1)}!${pH.getTag(h, 2)}"""
     }
 
     override fun isLocal() = false
@@ -246,7 +270,7 @@ class PureExtractorPrevTagWord : PureExtractor() {
     }
 
     override fun extract(h: History, pH: PairsHolder): String {
-        return pH.getTag(h, -1) + '!' + pH.getWord(h, 0)
+        return """${pH.getTag(h, -1)}!${pH.getWord(h, 0)}"""
     }
 
     override fun isLocal() = false
@@ -268,7 +292,7 @@ class PureExtractorPrevTagNextTag : PureExtractor() {
     }
 
     override fun extract(h: History, pH: PairsHolder): String {
-        return pH.getTag(h, -1) + '!' + pH.getTag(h, 1)
+        return """${pH.getTag(h, -1)}!${pH.getTag(h, 1)}"""
     }
 
     override fun isLocal() = false
@@ -286,7 +310,7 @@ class PureExtractorNextTagWord : PureExtractor() {
     }
 
     override fun extract(h: History, pH: PairsHolder): String {
-        return pH.getTag(h, 1) + '!' + pH.getWord(h, 0)
+        return """${pH.getTag(h, 1)}!${pH.getWord(h, 0)}"""
     }
 
     override fun isLocal() = false
@@ -296,9 +320,7 @@ class PureExtractorNextTagWord : PureExtractor() {
 
 /** English-specific crude company name NER.  */
 @kotlinx.serialization.Serializable
-class PureCompanyNameDetector : PureExtractor() {
-
-    private val companyNameEnds: MutableSet<String?>
+class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) : PureExtractor() {
 
     private fun companyNameEnd(s: String?): Boolean {
         return companyNameEnds.contains(s)
@@ -323,7 +345,6 @@ class PureCompanyNameDetector : PureExtractor() {
     override fun isDynamic() = false
 
     init {
-        companyNameEnds = HashSet()
         companyNameEnds.add("Company")
         companyNameEnds.add("COMPANY")
         companyNameEnds.add("Co.")
@@ -380,10 +401,6 @@ class PureExtractorLetterDigitDash : PureExtractor() {
     override fun isLocal() = true
 
     override fun isDynamic() = false
-
-    companion object {
-        private const val serialVersionUID: Long = 23
-    }
 }
 
 @kotlinx.serialization.Serializable
@@ -398,10 +415,6 @@ class PureExtractorUpperDigitDash : PureExtractor() {
     override fun isLocal() = true
 
     override fun isDynamic() = false
-
-    companion object {
-        private const val serialVersionUID = 33L
-    }
 }
 
 /**
@@ -612,9 +625,11 @@ class PureExtractorAllCapitalized : PureExtractor() {
 class PureExtractorCNumber : PureExtractor() {
     override fun extract(h: History, pH: PairsHolder): String {
         val s = pH.getWord(h, 0)
-        return if (containsNumber(s)) {
+        return if (s.contains(Regex("\\d"))) {
             "1"
-        } else "0"
+        } else {
+            "0"
+        }
     }
 
     override fun isLocal() = true
@@ -628,7 +643,9 @@ class PureExtractorDash : PureExtractor() {
         val s = pH.getWord(h, 0)
         return if (containsDash(s)) {
             "1"
-        } else "0"
+        } else {
+            "0"
+        }
     }
 
     override fun isLocal() = true
@@ -637,12 +654,14 @@ class PureExtractorDash : PureExtractor() {
 }
 
 @kotlinx.serialization.Serializable
-class PureExtractorCWordSuff(private val num: Int) : PureExtractor() {
+class PureExtractorCWordSuff(val num: Int) : PureExtractor() {
     override fun extract(h: History, pH: PairsHolder): String {
         val word = pH.getWord(h, 0)
         return if (word.length < num) {
             "######"
-        } else word.substring(word.length - num)
+        } else {
+            word.substring(word.length - num)
+        }
     }
 
     override fun toString(): String {
@@ -655,7 +674,7 @@ class PureExtractorCWordSuff(private val num: Int) : PureExtractor() {
 }
 
 @kotlinx.serialization.Serializable
-class PureExtractorCWordPref(private val num: Int) : PureExtractor() {
+class PureExtractorCWordPref(val num: Int) : PureExtractor() {
     override fun extract(h: History, pH: PairsHolder): String {
         val word = pH.getWord(h, 0)
         return if (word.length < num) {
@@ -675,17 +694,10 @@ class PureExtractorCWordPref(private val num: Int) : PureExtractor() {
 } // end class ExtractorCWordPref
 
 @kotlinx.serialization.Serializable
-class PureExtractorsConjunction() : PureExtractor() {
+class PureExtractorsConjunction(private val extractor1: PureExtractor, private val extractor2: PureExtractor) : PureExtractor() {
 
     private val privateIsLocal: Boolean = extractor1.isLocal() && extractor2.isLocal()
     private val privateIsDynamic: Boolean = extractor1.isDynamic() || extractor2.isDynamic()
-    private lateinit var extractor1: PureExtractor
-    private lateinit var extractor2: PureExtractor
-
-    constructor(extractor1: PureExtractor, extractor2: PureExtractor): this() {
-        this.extractor1 = extractor1
-        this.extractor2 = extractor2
-    }
 
     override fun setGlobalHolder(tagger: MaxentTagger) {
         extractor1.setGlobalHolder(tagger)
@@ -700,7 +712,9 @@ class PureExtractorsConjunction() : PureExtractor() {
         val ex2 = extractor2.extract(h, pH)
         return if (ex2 == zeroSt) {
             zeroSt
-        } else "$ex1:$ex2"
+        } else {
+            "$ex1:$ex2"
+        }
     }
 
     override fun isLocal() = privateIsLocal
@@ -709,24 +723,16 @@ class PureExtractorsConjunction() : PureExtractor() {
 }
 
 @kotlinx.serialization.Serializable
-class PureExtractorWordShapeClassifier() : PureExtractor() {
+class PureExtractorWordShapeClassifier(private val position: Int, private val wordShaper: Int) : PureExtractor() {
 
-    private var wordShaper: Int = 0
-    private var privatePosition: Int = 0
-
-    constructor(position: Int, wsc: String?): this() {
-        this.privatePosition = position
-        this.wordShaper = WordShapeClassifier.lookupShaper(wsc)
-    }
-
-    override fun getPosition() = privatePosition
+    override fun getPosition() = position
 
     override fun extract(h: History, pH: PairsHolder): String {
-        val s = super.extract(h, pH)
+        val s = if (isDynamic()) pH.getTag(h, getPosition()) else pH.getWord(h, getPosition())
         return WordShapeClassifier.wordShape(s, wordShaper)
     }
 
-    override fun isLocal() = privatePosition == 0
+    override fun isLocal() = position == 0
 
     override fun isDynamic() = false
 }
@@ -735,9 +741,7 @@ class PureExtractorWordShapeClassifier() : PureExtractor() {
  * This extractor extracts a conjunction of word shapes.
  */
 @kotlinx.serialization.Serializable
-class PureExtractorWordShapeConjunction(val left: Int, val right: Int) : PureExtractor() {
-    private val wordShaper: Int = WordShapeClassifier.lookupShaper("chris4")
-    private val name: String = "ExtractorWordShapeConjunction($left,$right)"
+class PureExtractorWordShapeConjunction(private val left: Int, private val right: Int, private val wordShaper: Int) : PureExtractor() {
     override fun extract(h: History, pH: PairsHolder): String {
         val sb = StringBuilder()
         for (j in left..right) {
@@ -779,6 +783,12 @@ open class PureDictionaryExtractor : PureExtractor() {
         super.setGlobalHolder(tagger)
         dict = tagger.dict
     }
+
+    override fun extract(h: History, pH: PairsHolder): String {
+        return if (isDynamic()) pH.getTag(h, getPosition()) else pH.getWord(h, getPosition())
+    }
+
+    override fun isDynamic() = false
 }
 
 /**
@@ -791,6 +801,7 @@ open class PureDictionaryExtractor : PureExtractor() {
  */
 @kotlinx.serialization.Serializable
 class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtractor() {
+
     override fun extract(h: History, pH: PairsHolder): String {
         val cword = pH.getWord(h, 0)
         val allCount = dict.sum(cword)
@@ -840,9 +851,7 @@ class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtract
         private const val naWord = "NA"
         private val stopper = Regex("(?i:and|or|but|,|;|-|--)")
         private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)") // cf. list in EnglishPTBTreebankCorrector
-        private const val serialVersionUID = -5881204185400060636L
     }
-
 }
 
 const val naTag = "NA"

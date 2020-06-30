@@ -10,7 +10,7 @@ This module includes two models:
 
 The total package size is around 11mb.
 
-    Author: Olli Jones and Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer)
+    Author: Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer
     License: GPL v2 or above
 
 ## Usage

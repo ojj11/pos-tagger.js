@@ -218,27 +218,31 @@ class TestSentence(private val maxentTagger: MaxentTagger) {
 
     fun getPossibleValues(pos: Int, data: SequenceData): IntArray {
         val arr1 = stringTagsAt(pos, data)!!
-        return arr1.indices.map { maxentTagger.tags.getIndex(arr1[it]) }.toIntArray()
+        val toIntArray = arr1.indices.map { maxentTagger.tags.getIndex(arr1[it]) }.toIntArray()
+        return toIntArray
     }
 
     fun scoresOf(tags: IntArray, pos: Int, data: SequenceData): DoubleArray {
 
         data.history.init(0, data.size - 1, data.size - data.size + pos - leftWindow())
         setHistory(pos, tags, data)
-        return getScores(data)
+        val scores = getScores(data)
+        return scores
     }
 
     private fun stringTagsAt(pos: Int, data: SequenceData): Array<String?>? {
         return if (pos < leftWindow() || pos >= data.size + leftWindow()) {
             arrayOf(naTag)
         } else if (maxentTagger.dict.isUnknown(data.sentence[pos - leftWindow()])) {
-            maxentTagger.tags.getOpenTags()!!.toTypedArray().also {
-                append(it, data.sentence[pos - leftWindow()])
-            }
+            append(
+                    maxentTagger.tags.getOpenTags()!!.toTypedArray(),
+                    data.sentence[pos - leftWindow()]
+            )
         } else {
-            maxentTagger.dict.getTags(data.sentence[pos - leftWindow()]).also {
-                append(it!!, data.sentence[pos - leftWindow()])
-            }
+            append(
+                    maxentTagger.dict.getTags(data.sentence[pos - leftWindow()])!!,
+                    data.sentence[pos - leftWindow()]
+            )
         }
     }
 

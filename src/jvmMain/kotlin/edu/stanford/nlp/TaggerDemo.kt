@@ -15,14 +15,14 @@ internal object TaggerDemo {
 
         val parameters = PureParameters(
                 JavaLoadingTools.fromFile(
-                        "/Users/oljones/Downloads/stanford-postagger-2010-05-26 3/models/left3words-wsj-0-18.tagger"
+                        "/Users/oljones/Downloads/stanford-postagger-2010-05-26 3/models/bidirectional-distsim-wsj-0-18.tagger"
                 ),
-                TaggerConfig("-model", "/Users/oljones/Downloads/stanford-postagger-2010-05-26 3/models/left3words-wsj-0-18.tagger").taggerConfig()
+                TaggerConfig("-model", "/Users/oljones/Downloads/stanford-postagger-2010-05-26 3/models/bidirectional-distsim-wsj-0-18.tagger").taggerConfig()
         )
 
         val dataSerializer = PureParameters.serializer()
         val cbor = kotlinx.serialization.cbor.Cbor()
-        val writer = BufferedOutputStream(FileOutputStream("model.cbor"))
+        val writer = GZIPOutputStream(BufferedOutputStream(FileOutputStream("model.cbor.gz")))
         val dump: ByteArray = cbor.dump(dataSerializer, parameters)
         writer.write(dump)
         writer.close()
@@ -39,7 +39,18 @@ internal object TaggerDemo {
                         Word("than"),
                         Word("I"),
                         Word("remember")
-                        )
+                ),
+                listOf(
+                        Word("I"),
+                        Word("am"),
+                        Word("confused"),
+                        Word("by"),
+                        Word("this"),
+                        Word("revelation")
+                ),
+                listOf(
+                        Word("123")
+                )
         )
         for (sentence in sentences) {
             val tSentence = tagger.tagSentence(sentence)

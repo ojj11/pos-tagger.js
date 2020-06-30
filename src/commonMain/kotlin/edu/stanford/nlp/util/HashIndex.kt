@@ -130,10 +130,6 @@ class HashIndex<E> : AbstractCollection<E>(), Index<E>, RandomAccess {
         return objects.iterator()
     }
 
-    companion object {
-        private const val serialVersionUID = 5398562825928375260L
-    }
-
     override fun getSizeOverride() = objects.size
     override val size: Int
         get() = objects.size

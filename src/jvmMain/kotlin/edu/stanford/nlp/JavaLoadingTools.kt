@@ -4,7 +4,9 @@ import edu.stanford.nlp.io.PureModel
 import edu.stanford.nlp.io.PureTaggerConfig
 import edu.stanford.nlp.maxent.Convert
 import edu.stanford.nlp.tagger.maxent.*
+import edu.stanford.nlp.tagger.maxent.Dictionary
 import java.io.ObjectInputStream
+import java.util.*
 
 object JavaLoadingTools {
 
@@ -68,6 +70,7 @@ object JavaLoadingTools {
         val `in` = ObjectInputStream(rf)
         val extractors = `in`.readObject() as Extractors
         val extractorsRare = `in`.readObject() as Extractors
+
         val sizeAssoc = rf.readInt()
         val fAssociations = (0 until sizeAssoc).map {
             val numF = rf.readInt()
@@ -87,7 +90,6 @@ object JavaLoadingTools {
         }
         val lambda = Convert.byteArrToDoubleArr(b)
         val lambdaSolve = LambdaSolveTagger(lambda)
-
         rf.close()
 
         return PureModel(
@@ -104,8 +106,9 @@ object JavaLoadingTools {
 
     private fun convertExtractor(extractor: Extractor): PureExtractor {
         return when(extractor) {
+            is ExtractorVerbalVBNZero -> PureExtractorVerbalVBNZero(extractor.bound)
             is ExtractorWordLowerCase -> PureExtractorWordLowerCase(extractor.position)
-            is ExtractorTwoWords -> PureExtractorTwoWords(extractor.position)
+            is ExtractorTwoWords -> PureExtractorTwoWords(extractor.leftPosition)
             is ExtractorCWordNextWord -> PureExtractorCWordNextWord()
             is ExtractorCWordPrevWord -> PureExtractorCWordPrevWord()
             is ExtractorPrevTwoTags -> PureExtractorPrevTwoTags()
@@ -114,7 +117,7 @@ object JavaLoadingTools {
             is ExtractorPrevTagWord -> PureExtractorPrevTagWord()
             is ExtractorPrevTagNextTag -> PureExtractorPrevTagNextTag()
             is ExtractorNextTagWord -> PureExtractorNextTagWord()
-            is CompanyNameDetector -> PureCompanyNameDetector()
+            is CompanyNameDetector -> PureCompanyNameDetector(extractor.companyNameEnds)
             is ExtractorUCase -> PureExtractorUCase()
             is ExtractorLetterDigitDash -> PureExtractorLetterDigitDash()
             is ExtractorUpperDigitDash -> PureExtractorUpperDigitDash()
@@ -129,11 +132,13 @@ object JavaLoadingTools {
             is ExtractorDash -> PureExtractorDash()
             is ExtractorCWordSuff -> PureExtractorCWordSuff(extractor.num)
             is ExtractorCWordPref -> PureExtractorCWordPref(extractor.num)
-            is ExtractorsConjunction -> PureExtractorsConjunction()
-            is ExtractorWordShapeClassifier -> PureExtractorWordShapeClassifier(extractor.position, extractor.wsc)
-            is ExtractorWordShapeConjunction -> PureExtractorWordShapeConjunction(extractor.left, extractor.right)
+            is ExtractorsConjunction -> PureExtractorsConjunction(
+                    convertExtractor(extractor.extractor1),
+                    convertExtractor(extractor.extractor2))
+            is ExtractorWordShapeClassifier -> PureExtractorWordShapeClassifier(extractor.position, extractor.wordShaper)
+            is ExtractorWordShapeConjunction -> PureExtractorWordShapeConjunction(extractor.left, extractor.right, extractor.wordShaper)
             is DictionaryExtractor -> PureDictionaryExtractor()
-            else -> PureExtractorBasic(extractor.position, extractor.isDynamic)
+            else -> PureExtractorBasic(extractor.position, extractor.isTag)
         }
     }
 

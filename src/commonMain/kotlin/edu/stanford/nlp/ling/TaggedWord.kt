@@ -13,10 +13,6 @@ class TaggedWord(word: String?, private val tag: String?) : Word(word!!), HasTag
     override fun tag() = tag
 
     fun toString(divider: String) = word() + divider + tag
-
-    companion object {
-        private const val DIVIDER = "/"
-        private const val serialVersionUID = -7252006452127051085L
-    }
-
 }
+
+const val DIVIDER = "/"

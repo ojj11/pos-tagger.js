@@ -19,9 +19,9 @@ fun getBundledUnidirectional() = js("""
 
 @JsName("tagger")
 class Tagger(model: ByteArray) {
-    val dataSerializer = PureParameters.serializer()
-    val cbor = kotlinx.serialization.cbor.Cbor()
-    val tagger = MaxentTagger(cbor.load(dataSerializer, model))
+    private val dataSerializer = PureParameters.serializer()
+    private val cbor = kotlinx.serialization.cbor.Cbor()
+    private val tagger = MaxentTagger(cbor.load(dataSerializer, model))
 
     @Suppress("unused")
     @JsName("tag")

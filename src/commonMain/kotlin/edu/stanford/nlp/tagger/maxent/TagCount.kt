@@ -11,6 +11,12 @@ package edu.stanford.nlp.tagger.maxent
 class TagCount(private var map: Map<String?, Int>) {
 
     /**
+     * @return an array of the tags the word has had.
+     */
+    @kotlinx.serialization.Transient
+    val tags: Array<String?> = map.keys.toTypedArray()
+
+    /**
      * @return the number of total occurrences of the word .
      */
     fun sum() = map.values.sum()
@@ -18,26 +24,10 @@ class TagCount(private var map: Map<String?, Int>) {
     operator fun get(tag: String?) = map[tag] ?: 0
 
     /**
-     * @return an array of the tags the word has had.
-     */
-    val tags: Array<String?> = map.keys.toTypedArray()
-
-    /**
      * @return the most frequent tag.
      */
     val firstTag: String?
-        get() {
-            var maxTag: String? = null
-            var max = 0
-            for (tag in map.keys) {
-                val count = map[tag]!!
-                if (count > max) {
-                    maxTag = tag
-                    max = count
-                }
-            }
-            return maxTag
-        }
+        get() = map.maxBy { it.value }?.key
 
     override fun toString() = map.toString()
 
