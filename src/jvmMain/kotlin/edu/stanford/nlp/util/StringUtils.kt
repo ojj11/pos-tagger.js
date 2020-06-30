@@ -21,7 +21,7 @@ private const val PROPERTIES = "properties"
  * @version 2006/02/03
  */
 object StringUtils {
-    val EMPTY_STRING_ARRAY = arrayOfNulls<String>(0)
+    val EMPTY_STRING_ARRAY = arrayOf<String>()
 
     /**
      * In this version each flag has zero or one argument. It has one argument

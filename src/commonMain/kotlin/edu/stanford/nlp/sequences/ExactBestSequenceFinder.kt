@@ -3,21 +3,8 @@ package edu.stanford.nlp.sequences
 import edu.stanford.nlp.tagger.maxent.SequenceData
 import edu.stanford.nlp.tagger.maxent.TestSentence
 
-/**
- * A class capable of computing the best sequence given a SequenceModel.
- * Uses the Viterbi algorithm.
- *
- * @author Dan Klein
- * @author Teg Grenager (grenager@stanford.edu)
- */
 class ExactBestSequenceFinder {
 
-    /**
-     * Runs the Viterbi algorithm on the sequence model given by the TagScorer
-     * in order to find the best sequence.
-     * @param ts The SequenceModel to be used for scoring
-     * @return An array containing the int tags of the best sequence
-     */
     fun bestSequence(data: SequenceData, ts: TestSentence): IntArray {
         val size = data.sentence.size
         val leftWindow = ts.leftWindow()
@@ -52,9 +39,6 @@ class ExactBestSequenceFinder {
                     }
                 }
 
-                // Here now you get ts.scoresOf() for all classifications at a position at once, wwhereas the old code called ts.scoreOf() on each item.
-                // CDM May 2007: The way this is done gives incorrect results if there are repeated values in the values of ts.getPossibleValues(pos) -- in particular if the first value of the array is repeated later.  I tried replacing it with the modulo version, but that only worked for left-to-right, not bidirectional inference, but I still think that if you sorted things out, you should be able to do it with modulos and the result would be conceptually simpler and robust to repeated values.  But in the meantime, I fixed the POS tagger to not give repeated values (which was a bug in the tagger).
-                // if (product % tagNum[pos] == 0) {
                 if (tempTags[pos] == tags[pos][0]) {
                     // get all tags at once
                     val scores = ts.scoresOf(tempTags, pos, data)

@@ -2,16 +2,6 @@ package edu.stanford.nlp.process
 
 import edu.stanford.nlp.util.Character
 
-/**
- * Provides static methods which
- * map any String to another String indicative of its "word shape" -- e.g.,
- * whether capitalized, numeric, etc.  Different implementations may
- * implement quite different, normally language specific ideas of what
- * word shapes are useful.
- *
- * @author Christopher Manning
- * @author Dan Klein
- */
 object WordShapeClassifier {
     private const val NOWORDSHAPE = -1
     private const val WORDSHAPEDAN1 = 0
@@ -28,14 +18,8 @@ object WordShapeClassifier {
     private const val WORDSHAPECHRIS3USELC = 11
     private const val WORDSHAPECHRIS4 = 12
 
-    /** Look up a shaper by a short String name.
-     *
-     * @param name Shaper name.  Known names have patterns along the lines of:
-     * dan[12](bio)?(UseLC)?, jenny1(useLC)?, chris[1234](useLC)?.
-     * @return An integer constant for the shaper
-     */
     fun lookupShaper(name: String?): Int {
-        return when(name?.toLowerCase()) {
+        return when (name?.toLowerCase()) {
             null -> NOWORDSHAPE
             "dan1" -> WORDSHAPEDAN1
             "chris1" -> WORDSHAPECHRIS1
@@ -54,30 +38,10 @@ object WordShapeClassifier {
         }
     }
 
-    /**
-     * Returns true if the specified word shaper doesn't use
-     * known lower case words, even if a list of them is present.
-     * This is used for backwards compatibility. It is suggested that
-     * new word shape functions are either passed a non-null list of
-     * lowercase words or not, depending on whether you want knownLC marking
-     * (if it is available in a shaper).  This is how chris4 works.
-     *
-     * @param shape One of the defined shape constants
-     * @return true if the specified word shaper uses
-     * known lower case words.
-     */
     private fun dontUseLC(shape: Int): Boolean {
         return shape == WORDSHAPEDAN2 || shape == WORDSHAPEDAN2BIO || shape == WORDSHAPEJENNY1 || shape == WORDSHAPECHRIS2 || shape == WORDSHAPECHRIS3
     }
 
-    /**
-     * Specify the String and the int identifying which word shaper to
-     * use and this returns the result of using that wordshaper on the String.
-     *
-     * @param inStr String to calculate word shpape of
-     * @param wordShaper Constant for which shaping formula to use
-     * @return The wordshape String
-     */
     fun wordShape(inStr: String, wordShaper: Int, knownLCWords: Collection<String?>? = null): String {
         // this first bit is for backwards compatibility with how things were first
         // implemented, where the word shaper name encodes whether to useLC.
@@ -101,13 +65,6 @@ object WordShapeClassifier {
         }
     }
 
-    /**
-     * A fairly basic 5-way classifier, that notes digits, and upper
-     * and lower case, mixed, and non-alphanumeric.
-     *
-     * @param s String to find word shape of
-     * @return Its word shape: a 5 way classification
-     */
     private fun wordShapeDan1(s: String): String {
         var digit = true
         var upper = true
@@ -142,22 +99,6 @@ object WordShapeClassifier {
         } else "OTHER"
     }
 
-    /**
-     * A fine-grained word shape classifier, that equivalence classes
-     * lower and upper case and digits, and collapses sequences of the
-     * same type, but keeps all punctuation, etc.
-     *
-     *
-     * *Note:* We treat '_' as a lowercase letter, sort of like many
-     * programming languages.  We do this because we use '_' joining of
-     * tokens in some applications like RTE.
-     *
-     * @param s           The String whose shape is to be returned
-     * @param knownLCWords If this is non-null and non-empty, mark words whose
-     * lower case form is found in the
-     * Collection of known lower case words
-     * @return The word shape
-     */
     private fun wordShapeDan2(s: String, knownLCWords: Collection<String?>?): String {
         val sb = StringBuilder("WT-")
         var lastM = '~'
@@ -189,7 +130,6 @@ object WordShapeClassifier {
                 sb.append('k')
             }
         }
-        // System.err.println("wordShapeDan2: " + s + " became " + sb);
         return sb.toString()
     }
 
@@ -210,7 +150,6 @@ object WordShapeClassifier {
                 if (s.startsWith(gr, i)) {
                     m = 'g'
                     i = i + gr.length - 1
-                    //System.out.println(s + "  ::  " + s.substring(i+1));
                     break
                 }
             }
@@ -231,33 +170,11 @@ object WordShapeClassifier {
                 sb.append('k')
             }
         }
-        //System.out.println(s+" became "+sb);
         return sb.toString()
     }
 
-    /** Note: the optimizations in wordShapeChris2 would break if BOUNDARY_SIZE
-     * was greater than the shortest greek word, so valid values are: 0, 1, 2, 3.
-     */
     private const val BOUNDARY_SIZE = 2
 
-    /**
-     * This one picks up on Dan2 ideas, but seeks to make less distinctions
-     * mid sequence by sorting for long words, but to maintain extra
-     * distinctions for short words. It exactly preserves the character shape
-     * of the first and last 2 (i.e., BOUNDARY_SIZE) characters and then
-     * will record shapes that occur between them (perhaps only if they are
-     * different)
-     *
-     * @param s The String to find the word shape of
-     * @param omitIfInBoundary If true, character classes present in the
-     * first or last two (i.e., BOUNDARY_SIZE) letters
-     * of the word are not also registered
-     * as classes that appear in the middle of the word.
-     * @param knownLCWords If non-null and non-empty, tag with a "k" suffix words
-     * that are in this list when lowercased (representing
-     * that the word is "known" as a lowercase word).
-     * @return A word shape for the word.
-     */
     private fun wordShapeChris2(s: String, omitIfInBoundary: Boolean, knownLCWords: Collection<String?>?): String {
         val len = s.length
         return if (len <= BOUNDARY_SIZE * 2) {
@@ -286,9 +203,7 @@ object WordShapeClassifier {
             for (gr in greek) {
                 if (s.startsWith(gr, i)) {
                     m = 'g'
-                    //System.out.println(s + "  ::  " + s.substring(i+1));
                     i += gr.length - 1
-                    // System.out.println("Position skips to " + i);
                     break
                 }
             }
@@ -303,25 +218,15 @@ object WordShapeClassifier {
                 sb.append('k')
             }
         }
-        // System.out.println(s + " became " + sb);
         return sb.toString()
     }
 
-    // introduce sizes and optional allocation to reduce memory churn demands;
-    // this class could blow a lot of memory if used in a tight loop,
-    // as the naive version allocates lots of kind of heavyweight objects
-    // endSB should be of length BOUNDARY_SIZE
-    // sb is maximally of size s.length() + 1, but is usually (much) shorter. The +1 might happen if markKnownLC is true and it applies
-    // boundSet is maximally of size BOUNDARY_SIZE * 2 (and is often smaller)
-    // seenSet is maximally of size s.length() - BOUNDARY_SIZE * 2, but might often be of size <= 4. But it has no initial size allocation
-    // But we want the initial size to be greater than BOUNDARY_SIZE * 2 * (4/3) since the default loadfactor is 3/4.
-    // That is, of size 6, which become 8, since HashMaps are powers of 2.  Still, it's half the size
     private fun wordShapeChris2Long(s: String, omitIfInBoundary: Boolean, len: Int, knownLCWords: Collection<String?>?): String {
         val beginChars = CharArray(BOUNDARY_SIZE)
         val endChars = CharArray(BOUNDARY_SIZE)
         var beginUpto = 0
         var endUpto = 0
-        val seenSet: MutableSet<Char> = mutableSetOf() // TreeSet guarantees stable ordering; has no size parameter
+        val seenSet: MutableSet<Char> = mutableSetOf()
         var nonLetters = false
         var i = 0
         while (i < len) {
@@ -338,7 +243,6 @@ object WordShapeClassifier {
             for (gr in greek) {
                 if (s.startsWith(gr, i)) {
                     m = 'g'
-                    //System.out.println(s + "  ::  " + s.substring(i+1));
                     iIncr = gr.length - 1
                     break
                 }
@@ -395,13 +299,12 @@ object WordShapeClassifier {
                 sb.append('k')
             }
         }
-        // System.out.println(s + " became " + sb);
         return sb.toString()
     }
 
     private fun chris4equivalenceClass(c: Char): Char {
         val type = Character.getType(c)
-        return if (Character.isDigit(c) || type == Character.LETTER_NUMBER.toInt() || type == Character.OTHER_NUMBER.toInt() || "一二三四五六七八九十零〇百千万亿兩○◯".indexOf(c) > 0) {
+        return if (Character.isDigit(c) || type == Character.LETTER_NUMBER || type == Character.OTHER_NUMBER || "一二三四五六七八九十零〇百千万亿兩○◯".indexOf(c) > 0) {
             // include Chinese numbers that are just of unicode type OTHER_LETTER (and a couple of round symbols often used (by mistake?) for zeroes)
             'd'
         } else if (c == '第') {
@@ -414,50 +317,35 @@ object WordShapeClassifier {
             'X'
         } else if (Character.isWhitespace(c) || Character.isSpaceChar(c)) {
             's'
-        } else if (type == Character.OTHER_LETTER.toInt()) {
+        } else if (type == Character.OTHER_LETTER) {
             'c' // Chinese characters, etc. without case
-        } else if (type == Character.CURRENCY_SYMBOL.toInt()) {
+        } else if (type == Character.CURRENCY_SYMBOL) {
             '$'
-        } else if (type == Character.MATH_SYMBOL.toInt()) {
+        } else if (type == Character.MATH_SYMBOL) {
             '+'
-        } else if (type == Character.OTHER_SYMBOL.toInt() || c == '|') {
+        } else if (type == Character.OTHER_SYMBOL || c == '|') {
             '|'
-        } else if (type == Character.START_PUNCTUATION.toInt()) {
+        } else if (type == Character.START_PUNCTUATION) {
             '('
-        } else if (type == Character.END_PUNCTUATION.toInt()) {
+        } else if (type == Character.END_PUNCTUATION) {
             ')'
-        } else if (type == Character.INITIAL_QUOTE_PUNCTUATION.toInt()) {
+        } else if (type == Character.INITIAL_QUOTE_PUNCTUATION) {
             '`'
-        } else if (type == Character.FINAL_QUOTE_PUNCTUATION.toInt() || c == '\'') {
+        } else if (type == Character.FINAL_QUOTE_PUNCTUATION || c == '\'') {
             '\''
         } else if (c == '%') {
             '%'
-        } else if (type == Character.OTHER_PUNCTUATION.toInt()) {
+        } else if (type == Character.OTHER_PUNCTUATION) {
             '.'
-        } else if (type == Character.CONNECTOR_PUNCTUATION.toInt()) {
+        } else if (type == Character.CONNECTOR_PUNCTUATION) {
             '_'
-        } else if (type == Character.DASH_PUNCTUATION.toInt()) {
+        } else if (type == Character.DASH_PUNCTUATION) {
             '-'
         } else {
             'q'
         }
     }
 
-    /**
-     * This one picks up on Dan2 ideas, but seeks to make less distinctions
-     * mid sequence by sorting for long words, but to maintain extra
-     * distinctions for short words, by always recording the class of the
-     * first and last two characters of the word.
-     * Compared to chris2 on which it is based,
-     * it uses more Unicode classes, and so collapses things like
-     * punctuation more, and might work better with real unicode.
-     *
-     * @param s The String to find the word shape of
-     * @param knownLCWords If non-null and non-empty, tag with a "k" suffix words
-     * that are in this list when lowercased (representing
-     * that the word is "known" as a lowercase word).
-     * @return A word shape for the word.
-     */
     private fun wordShapeChris4(s: String, knownLCWords: Collection<String?>?): String {
         val len = s.length
         return if (len <= BOUNDARY_SIZE * 2) {
@@ -544,12 +432,6 @@ object WordShapeClassifier {
         return sb.toString()
     }
 
-    /**
-     * Returns a fine-grained word shape classifier, that equivalence classes
-     * lower and upper case and digits, and collapses sequences of the
-     * same type, but keeps all punctuation.  This adds an extra recognizer
-     * for a greek letter embedded in the String, which is useful for bio.
-     */
     private fun wordShapeDan2Bio(s: String, knownLCWords: Collection<String?>?): String {
         return if (containsGreekLetter(s)) {
             wordShapeDan2(s, knownLCWords) + "-GREEK"
@@ -558,32 +440,13 @@ object WordShapeClassifier {
         }
     }
 
-    /** List of greek letters for bio.  We omit eta, mu, nu, xi, phi, chi, psi.
-     * Maybe should omit rho too, but it is used in bio "Rho kinase inhibitor".
-     */
     private val greek = arrayOf("alpha", "beta", "gamma", "delta", "epsilon", "zeta", "theta", "iota", "kappa", "lambda", "omicron", "rho", "sigma", "tau", "upsilon", "omega")
     private val biogreek = Regex("alpha|beta|gamma|delta|epsilon|zeta|theta|iota|kappa|lambda|omicron|rho|sigma|tau|upsilon|omega")
 
-    /**
-     * Somewhat ad-hoc list of only greek letters that bio people use, partly
-     * to avoid false positives on short ones.
-     * @param s String to check for Greek
-     * @return true iff there is a greek lette embedded somewhere in the String
-     */
     private fun containsGreekLetter(s: String): Boolean {
         return biogreek.matches(s)
     }
 
-    /** This one equivalence classes all strings into one of 24 semantically
-     * informed classes, somewhat similarly to the function specified in the
-     * BBN Nymble NER paper (Bikel et al. 1997).
-     *
-     *
-     * Note that it regards caseless non-Latin letters as lowercase.
-     *
-     * @param s String to word class
-     * @return The string's class
-     */
     private fun wordShapeChris1(s: String): String {
         val length = s.length
         if (length == 0) {
@@ -658,44 +521,26 @@ object WordShapeClassifier {
                 initCap = true
             }
         }
-        return if (length == 2 && initCap && period) {
-            "ACRONYM1"
-        } else if (seenUpper && allCaps && !seenDigit && period) {
-            "ACRONYM"
-        } else if (seenDigit && dash && !seenUpper && !seenLower) {
-            "DIGIT-DASH"
-        } else if (initCap && seenLower && seenDigit && dash) {
-            "CAPITALIZED-DIGIT-DASH"
-        } else if (initCap && seenLower && seenDigit) {
-            "CAPITALIZED-DIGIT"
-        } else if (initCap && seenLower and dash) {
-            "CAPITALIZED-DASH"
-        } else if (initCap && seenLower) {
-            "CAPITALIZED"
-        } else if (seenUpper && allCaps && seenDigit && dash) {
-            "ALLCAPS-DIGIT-DASH"
-        } else if (seenUpper && allCaps && seenDigit) {
-            "ALLCAPS-DIGIT"
-        } else if (seenUpper && allCaps && dash) {
-            "ALLCAPS"
-        } else if (seenUpper && allCaps) {
-            "ALLCAPS"
-        } else if (seenLower && allLower && seenDigit && dash) {
-            "LOWERCASE-DIGIT-DASH"
-        } else if (seenLower && allLower && seenDigit) {
-            "LOWERCASE-DIGIT"
-        } else if (seenLower && allLower && dash) {
-            "LOWERCASE-DASH"
-        } else if (seenLower && allLower) {
-            "LOWERCASE"
-        } else if (seenLower && seenDigit) {
-            "MIXEDCASE-DIGIT"
-        } else if (seenLower) {
-            "MIXEDCASE"
-        } else if (seenDigit) {
-            "SYMBOL-DIGIT"
-        } else {
-            "SYMBOL"
+        return when {
+            length == 2 && initCap && period -> "ACRONYM1"
+            seenUpper && allCaps && !seenDigit && period -> "ACRONYM"
+            seenDigit && dash && !seenUpper && !seenLower -> "DIGIT-DASH"
+            initCap && seenLower && seenDigit && dash -> "CAPITALIZED-DIGIT-DASH"
+            initCap && seenLower && seenDigit -> "CAPITALIZED-DIGIT"
+            initCap && seenLower and dash -> "CAPITALIZED-DASH"
+            initCap && seenLower -> "CAPITALIZED"
+            seenUpper && allCaps && seenDigit && dash -> "ALLCAPS-DIGIT-DASH"
+            seenUpper && allCaps && seenDigit -> "ALLCAPS-DIGIT"
+            seenUpper && allCaps && dash -> "ALLCAPS"
+            seenUpper && allCaps -> "ALLCAPS"
+            seenLower && allLower && seenDigit && dash -> "LOWERCASE-DIGIT-DASH"
+            seenLower && allLower && seenDigit -> "LOWERCASE-DIGIT"
+            seenLower && allLower && dash -> "LOWERCASE-DASH"
+            seenLower && allLower -> "LOWERCASE"
+            seenLower && seenDigit -> "MIXEDCASE-DIGIT"
+            seenLower -> "MIXEDCASE"
+            seenDigit -> "SYMBOL-DIGIT"
+            else -> "SYMBOL"
         }
     }
 }

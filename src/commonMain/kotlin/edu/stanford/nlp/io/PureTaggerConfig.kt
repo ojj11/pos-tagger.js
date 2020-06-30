@@ -1,11 +1,13 @@
 package edu.stanford.nlp.io
 
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PureTaggerConfig(
         val defaultScore: Double,
         val learnClosedClassTags: Boolean,
-        val closedClassTags: Array<String?>?,
-        val openClassTags: Array<String?>?,
+        val closedClassTags: Array<String>,
+        val openClassTags: Array<String>,
         val lang: String,
         val rareWordThresh: Int
 ) {
@@ -17,14 +19,8 @@ data class PureTaggerConfig(
 
         if (defaultScore != other.defaultScore) return false
         if (learnClosedClassTags != other.learnClosedClassTags) return false
-        if (closedClassTags != null) {
-            if (other.closedClassTags == null) return false
-            if (!closedClassTags.contentEquals(other.closedClassTags)) return false
-        } else if (other.closedClassTags != null) return false
-        if (openClassTags != null) {
-            if (other.openClassTags == null) return false
-            if (!openClassTags.contentEquals(other.openClassTags)) return false
-        } else if (other.openClassTags != null) return false
+        if (!closedClassTags.contentEquals(other.closedClassTags)) return false
+        if (!openClassTags.contentEquals(other.openClassTags)) return false
         if (lang != other.lang) return false
         if (rareWordThresh != other.rareWordThresh) return false
 
@@ -34,8 +30,8 @@ data class PureTaggerConfig(
     override fun hashCode(): Int {
         var result = defaultScore.hashCode()
         result = 31 * result + learnClosedClassTags.hashCode()
-        result = 31 * result + (closedClassTags?.contentHashCode() ?: 0)
-        result = 31 * result + (openClassTags?.contentHashCode() ?: 0)
+        result = 31 * result + closedClassTags.contentHashCode()
+        result = 31 * result + openClassTags.contentHashCode()
         result = 31 * result + lang.hashCode()
         result = 31 * result + rareWordThresh
         return result

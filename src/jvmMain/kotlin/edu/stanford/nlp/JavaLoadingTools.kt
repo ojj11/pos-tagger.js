@@ -6,7 +6,6 @@ import edu.stanford.nlp.maxent.Convert
 import edu.stanford.nlp.tagger.maxent.*
 import edu.stanford.nlp.tagger.maxent.Dictionary
 import java.io.ObjectInputStream
-import java.util.*
 
 object JavaLoadingTools {
 
@@ -32,9 +31,9 @@ object JavaLoadingTools {
                     val word = rf.readUTF()
                     val numTags = rf.readInt()
                     val tagMap = (0 until numTags).map {
-                        var tag: String? = rf.readUTF()
+                        var tag = rf.readUTF()
                         val count = rf.readInt()
-                        if (tag == TagCount.NULL_SYMBOL) {
+                        if (tag == "<<NULL>>") {
                             tag = null
                         }
                         tag to count
@@ -79,7 +78,7 @@ object JavaLoadingTools {
             val value = rf.readUTF()
             // intern the tag strings as they are read, since there are few of them. This saves tons of memory.
             val tag = rf.readUTF()
-            val fK = FeatureKey(num, value, tag)
+            val fK = Feature(num, value, tag)
             Pair(fK, numF)
         }.toMap()
 
@@ -89,7 +88,6 @@ object JavaLoadingTools {
             throw IllegalStateException("Lambda values are incomplete")
         }
         val lambda = Convert.byteArrToDoubleArr(b)
-        val lambdaSolve = LambdaSolveTagger(lambda)
         rf.close()
 
         return PureModel(
@@ -97,7 +95,7 @@ object JavaLoadingTools {
                 PureExtractors(extractors.v.convert()),
                 PureExtractors(extractorsRare.v.convert()),
                 fAssociations,
-                lambdaSolve,
+                lambda,
                 dict,
                 tags,
                 closedClassTags

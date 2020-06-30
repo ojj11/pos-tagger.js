@@ -1,4 +1,5 @@
 import edu.stanford.nlp.io.PureParameters
+import edu.stanford.nlp.ling.TaggedWord
 import edu.stanford.nlp.ling.Word
 import edu.stanford.nlp.tagger.maxent.MaxentTagger
 
@@ -25,9 +26,8 @@ class Tagger(model: ByteArray) {
 
     @Suppress("unused")
     @JsName("tag")
-    fun tag(words: Array<String>): Array<OutputWord> {
+    fun tag(words: Array<String>): Array<TaggedWord> {
         return tagger.tagSentence(words.map {Word(it)})
-                .map { OutputWord(it.word(), it.tag()) }
                 .toTypedArray()
     }
 }

@@ -1,23 +1,15 @@
 package edu.stanford.nlp.tagger.maxent
 
-import edu.stanford.nlp.ling.WordTag
+import edu.stanford.nlp.ling.TaggedWord
 
-/** A simple class that maintains a list of WordTag pairs which are interned
- * as they are added.  This stores a tagged corpus.
- *
- * @author Kristina Toutanova
- * @version 1.0
- */
-class PairsHolder(sentence: List<String>) {
-    private val arr = sentence.map { WordTag(it, "NA") }
+class PairsHolder(sentence: List<String>, var offset: Int = 0) {
+    private val arr = sentence.map { TaggedWord(it, "NA") }
 
-    fun setTag(pos: Int, tag: String?) {
-        arr[pos].setTag(tag)
+    operator fun set(pos: Int, tag: String?) {
+        arr[pos].tag = tag
     }
 
-    fun getWord(position: Int) = arr[position].word()
+    fun getWord(position: Int) = arr.getOrNull(offset + position)?.word ?: "NA"
 
-    fun getWord(h: History, position: Int) = arr.getOrNull(h.current + position)?.word() ?: "NA"
-
-    fun getTag(h: History, position: Int) = arr.getOrNull(h.current + position)?.tag() ?: "NA"
+    fun getTag(position: Int) = arr.getOrNull(offset + position)?.tag ?: "NA"
 }

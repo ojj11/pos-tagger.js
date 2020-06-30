@@ -39,17 +39,17 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
         private const val DEBUG = "false"
         private const val ITERATIONS = "100"
         private const val ARCH = ""
-        private val RARE_WORD_THRESH: String = MaxentTagger.RARE_WORD_THRESH.toString()
-        private val MIN_FEATURE_THRESH: String = MaxentTagger.MIN_FEATURE_THRESH.toString()
-        private val CUR_WORD_MIN_FEATURE_THRESH: String = MaxentTagger.CUR_WORD_MIN_FEATURE_THRESH.toString()
-        private val RARE_WORD_MIN_FEATURE_THRESH: String = MaxentTagger.RARE_WORD_MIN_FEATURE_THRESH.toString()
-        private val VERY_COMMON_WORD_THRESH: String = MaxentTagger.VERY_COMMON_WORD_THRESH.toString()
-        private val OCCURING_TAGS_ONLY: String = MaxentTagger.OCCURRING_TAGS_ONLY.toString()
-        private val POSSIBLE_TAGS_ONLY: String = MaxentTagger.POSSIBLE_TAGS_ONLY.toString()
+        private const val RARE_WORD_THRESH: String = 5.toString()
+        private const val MIN_FEATURE_THRESH: String = 5.toString()
+        private const val CUR_WORD_MIN_FEATURE_THRESH: String = 2.toString()
+        private const val RARE_WORD_MIN_FEATURE_THRESH: String = 10.toString()
+        private const val VERY_COMMON_WORD_THRESH: String = 250.toString()
+        private const val OCCURING_TAGS_ONLY: String = false.toString()
+        private const val POSSIBLE_TAGS_ONLY: String = false.toString()
         private const val SIGMA_SQUARED = 0.5.toString()
         private const val ENCODING = "UTF-8"
         private const val LEARN_CLOSED_CLASS = "false"
-        private val CLOSED_CLASS_THRESHOLD: String = TTags.CLOSED_TAG_THRESHOLD.toString()
+        private const val CLOSED_CLASS_THRESHOLD: String = 40.toString()
         private const val VERBOSE = "false"
         private const val VERBOSE_RESULTS = "true"
         private const val SGML = "false"
@@ -68,7 +68,7 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
         private const val OUTPUT_FORMAT = "slashTags"
         private const val OUTPUT_FORMAT_OPTIONS = ""
         private val defaultValues = HashMap<String?, String?>()
-        private fun wsvStringToStringArray(str: String?): Array<String?>? {
+        private fun wsvStringToStringArray(str: String?): Array<String> {
             return if (str == null || str == "") {
                 StringUtils.EMPTY_STRING_ARRAY
             } else {
@@ -438,10 +438,10 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
     val lang: String
         get() = getProperty("lang")
 
-    val openClassTags: Array<String?>?
+    val openClassTags
         get() = wsvStringToStringArray(getProperty("openClassTags"))
 
-    val closedClassTags: Array<String?>?
+    val closedClassTags
         get() = wsvStringToStringArray(getProperty("closedClassTags"))
 
     val learnClosedClassTags: Boolean

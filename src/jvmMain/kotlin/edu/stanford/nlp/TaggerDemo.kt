@@ -2,11 +2,11 @@ package edu.stanford.nlp
 
 import edu.stanford.nlp.JavaLoadingTools.taggerConfig
 import edu.stanford.nlp.io.PureParameters
-import edu.stanford.nlp.ling.Sentence
 import edu.stanford.nlp.ling.Word
 import edu.stanford.nlp.tagger.maxent.MaxentTagger
 import edu.stanford.nlp.tagger.maxent.TaggerConfig
-import java.io.*
+import java.io.BufferedOutputStream
+import java.io.FileOutputStream
 import java.util.zip.GZIPOutputStream
 
 internal object TaggerDemo {
@@ -49,12 +49,12 @@ internal object TaggerDemo {
                         Word("revelation")
                 ),
                 listOf(
-                        Word("123")
+                        Word("12jdio2w3")
                 )
         )
         for (sentence in sentences) {
             val tSentence = tagger.tagSentence(sentence)
-            println(Sentence.listToString(tSentence, false))
+            println(tSentence)
         }
     }
 }

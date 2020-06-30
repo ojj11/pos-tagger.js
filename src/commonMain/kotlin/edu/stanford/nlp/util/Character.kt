@@ -1,19 +1,19 @@
 package edu.stanford.nlp.util
 
 object Character {
-    val DASH_PUNCTUATION: Int = 0
-    val CONNECTOR_PUNCTUATION: Int = 1
-    val OTHER_PUNCTUATION: Int = 2
-    val FINAL_QUOTE_PUNCTUATION: Int = 3
-    val INITIAL_QUOTE_PUNCTUATION: Int = 4
-    val END_PUNCTUATION: Int = 5
-    val START_PUNCTUATION: Int = 6
-    val OTHER_SYMBOL: Int = 7
-    val MATH_SYMBOL: Int = 8
-    val CURRENCY_SYMBOL: Int = 9
-    val OTHER_LETTER: Int = 10
-    val OTHER_NUMBER: Int = 11
-    val LETTER_NUMBER: Int = 12
+    const val DASH_PUNCTUATION: Int = 0
+    const val CONNECTOR_PUNCTUATION: Int = 1
+    const val OTHER_PUNCTUATION: Int = 2
+    const val FINAL_QUOTE_PUNCTUATION: Int = 3
+    const val INITIAL_QUOTE_PUNCTUATION: Int = 4
+    const val END_PUNCTUATION: Int = 5
+    const val START_PUNCTUATION: Int = 6
+    const val OTHER_SYMBOL: Int = 7
+    const val MATH_SYMBOL: Int = 8
+    const val CURRENCY_SYMBOL: Int = 9
+    const val OTHER_LETTER: Int = 10
+    const val OTHER_NUMBER: Int = 11
+    const val LETTER_NUMBER: Int = 12
 
     fun isDigit(c: Char): Boolean {
         return c in '0'..'9'

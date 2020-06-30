@@ -1,6 +1,8 @@
 package edu.stanford.nlp.io
 
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PureParameters(
         val model: PureModel,
         val config: PureTaggerConfig
