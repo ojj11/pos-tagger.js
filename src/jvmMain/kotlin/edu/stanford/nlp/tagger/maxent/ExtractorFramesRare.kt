@@ -1,6 +1,7 @@
 package edu.stanford.nlp.tagger.maxent
 
-import edu.stanford.nlp.process.WordShapeClassifier
+import com.github.ojj11.Dictionary
+import com.github.ojj11.WordShapeClassifier
 
 /**
  * Superclass for rare word feature frames.  Provides some common functions.

@@ -1,5 +1,7 @@
 package edu.stanford.nlp.tagger.maxent
 
+import edu.stanford.nlp.tagger.maxent.Extractor
+
 /**
  * The word in lower-cased version.
  */

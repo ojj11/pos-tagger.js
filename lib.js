@@ -5,12 +5,8 @@ function Tagger(model) {
     this.tagger = new kotlin.tagger(model);
 }
 
-Tagger.left3words_wsj_v0_18 = function() {
-    return kotlin.left3words_wsj_v0_18();
-}
-
-Tagger.bidirectional_distsim_wsj_v0_18 = function() {
-    return kotlin.bidirectional_distsim_wsj_v0_18();
+Tagger.readModelSync = function(path) {
+    return kotlin.readModelSync(path);
 }
 
 Tagger.prototype.tag = function(string) {

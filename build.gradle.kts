@@ -1,21 +1,22 @@
 plugins {
-    // Apply the Kotlin JVM plugin to add support for Kotlin.
-    kotlin("multiplatform") version "1.3.72"
-    kotlin("plugin.serialization") version "1.3.72"
+    kotlin("multiplatform") version "1.4-M3"
+    kotlin("plugin.serialization") version "1.4-M3"
 }
 
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
+    maven ("https://dl.bintray.com/kotlin/kotlin-eap")
     jcenter()
 }
 
 kotlin {
 
-    js {
+    js(IR) {
+        useCommonJs()
         nodejs()
+        binaries.executable()
     }
+
     jvm()
 
     sourceSets {
@@ -29,23 +30,24 @@ kotlin {
 
         get("jsMain").dependencies {
             implementation(kotlin("stdlib-js"))
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:0.20.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0-1.4-M3")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor-js:0.20.0-1.4-M3")
 
         }
 
         get("jvmMain").dependencies {
             implementation(kotlin("stdlib-jdk8"))
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:0.20.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:0.20.0-1.4-M3")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0-1.4-M3")
         }
     }
 
 }
 
-val runJvm by tasks.creating(JavaExec::class) {
+val convertModels by tasks.creating(JavaExec::class) {
     group = "application"
-    main = "edu.stanford.nlp.TaggerDemo"
+    description = "Convert original models to new CBOR format"
+    main = "com.github.ojj11.ConvertModels"
     kotlin {
         val main = targets["jvm"].compilations["main"]
         dependsOn(main.compileAllTaskName)

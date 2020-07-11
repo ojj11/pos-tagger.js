@@ -1,33 +1,26 @@
-import edu.stanford.nlp.io.PureParameters
-import edu.stanford.nlp.ling.TaggedWord
-import edu.stanford.nlp.ling.Word
-import edu.stanford.nlp.tagger.maxent.MaxentTagger
+import com.github.ojj11.MaxentTagger
+import com.github.ojj11.PureParameters
 
-data class OutputWord(
-        val word: String,
-        val tag: String?
-)
+@JsExport
+@JsName("readModelSync")
+fun readModelSync(file: String): dynamic {
+    return js("""
+        require("zlib").gunzipSync(require("fs").readFileSync(__dirname + "/../../../../../models/" + file + ".cbor.gz"))
+    """)
+}
 
-@JsName("bidirectional_distsim_wsj_v0_18")
-fun getBundledBidirectional() = js("""
-    require("zlib").gunzipSync(require("fs").readFileSync(__dirname + "/../../../../../models/bidirectional-distsim-wsj-0-18.cbor.gz"))
-""")
+@JsExport
+data class Output(val word: String, var tag: String?)
 
-@JsName("left3words_wsj_v0_18")
-fun getBundledUnidirectional() = js("""
-    require("zlib").gunzipSync(require("fs").readFileSync(__dirname + "/../../../../../models/left3words-wsj-0-18.cbor.gz"))
-""")
-
+@JsExport
 @JsName("tagger")
-class Tagger(model: ByteArray) {
+class Tagger(bytes: ByteArray) {
     private val dataSerializer = PureParameters.serializer()
     private val cbor = kotlinx.serialization.cbor.Cbor()
-    private val tagger = MaxentTagger(cbor.load(dataSerializer, model))
+    private val tagger = MaxentTagger(cbor.load(dataSerializer, bytes))
 
-    @Suppress("unused")
     @JsName("tag")
-    fun tag(words: Array<String>): Array<TaggedWord> {
-        return tagger.tagSentence(words.map {Word(it)})
-                .toTypedArray()
-    }
+    fun tag(words: Array<String>) = tagger.tagSentence(words).map {
+        Output(it.word, it.tag)
+    }.toTypedArray()
 }

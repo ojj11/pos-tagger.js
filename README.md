@@ -2,7 +2,7 @@
 
 > A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc., although generally computational applications use more fine-grained POS tags like 'noun-plural'.
 
-This is a JavaScript port of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml) ported to JavaScript. No background service is needed.
+This is a Kotlin port of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml), it is compiled to JavaScript and made available through npm. No background Java service is needed.
 
 This module includes two models:
  - bidirectional-distsim-wsj-0-18
@@ -17,12 +17,15 @@ The total package size is around 11mb.
 
 ```javascript
 const Tagger = require("stanford-tagger.js");
-const tagger = new Tagger(Tagger.left3words_wsj_v0_18());
+const tagger = new Tagger(Tagger.readModelSync("left3words-wsj-0-18"));
 
 // alternatively
-// const tagger = new Tagger(Tagger.bidirectional_distsim_wsj_v0_18());
+// const tagger = new Tagger(Tagger.readModelSync("bidirectional-distsim-wsj-0-18"));
 
-console.log(tagger.tag("I am the Stanford POS Tagger. How do you do?"));
+const output = tagger.tag("I am a happy part-of-speech tagger. How do you do?");
+
+console.log(output);
+console.log("First word is a " + output[0][0].tag);
 ```
 
 `tag` takes a string representing multiple sentences (where there isn't a terminating ".", one is added). The output is a list with one element per input sentence. Each sentence element is itself a list with an element per input token, each element contains a `word` key with the original token, and a `tag` key which contains the [Penn Treebank part-of-speech tag](https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
@@ -32,22 +35,22 @@ console.log(tagger.tag("I am the Stanford POS Tagger. How do you do?"));
 ```json
 [
   [
-    { "word": "I", "tag": "CD" },
+    { "word": "I", "tag": "PRP" },
     { "word": "am", "tag": "VBP" },
-    { "word": "the", "tag": "VBP" },
-    { "word": "Stanford", "tag": "NNP" },
-    { "word": "POS", "tag": "NNP" },
-    { "word": "Tagger", "tag": "NNP" },
-    { "word": ".", "tag": "."
-    }
+    { "word": "a", "tag": "DT" },
+    { "word": "happy", "tag": "JJ" },
+    { "word": "part-of-speech", "tag": "JJ" },
+    { "word": "tagger", "tag": "NN" },
+    { "word": ".", "tag": "." }
   ],
   [
     { "word": "How", "tag": "WRB" },
-    { "word": "do", "tag": "VB" },
+    { "word": "do", "tag": "VBP" },
     { "word": "you", "tag": "PRP" },
     { "word": "do", "tag": "VB" },
     { "word": "?", "tag": "."
     }
   ]
 ]
+First word is a PRP
 ```

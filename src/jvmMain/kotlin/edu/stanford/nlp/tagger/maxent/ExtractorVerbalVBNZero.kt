@@ -1,5 +1,7 @@
 package edu.stanford.nlp.tagger.maxent
 
+import edu.stanford.nlp.tagger.maxent.DictionaryExtractor
+
 /**
  * Look for verbs selecting a VBN verb.
  * This is now a zeroeth order observed data only feature.

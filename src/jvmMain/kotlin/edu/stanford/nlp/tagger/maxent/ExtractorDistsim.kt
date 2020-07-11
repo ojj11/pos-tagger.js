@@ -1,6 +1,6 @@
 package edu.stanford.nlp.tagger.maxent
 
-import java.io.File
+import edu.stanford.nlp.tagger.maxent.Extractor
 
 /**
  * Extractor for adding distsim information.

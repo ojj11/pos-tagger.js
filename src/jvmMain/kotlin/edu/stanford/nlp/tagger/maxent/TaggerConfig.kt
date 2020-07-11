@@ -1,7 +1,7 @@
 package edu.stanford.nlp.tagger.maxent
 
-import edu.stanford.nlp.util.StringUtils
-import edu.stanford.nlp.util.StringUtils.argsToProperties
+import com.github.ojj11.util.StringUtils
+import com.github.ojj11.util.StringUtils.argsToProperties
 import java.io.*
 import java.net.URL
 import java.util.*
