@@ -1,4 +1,4 @@
-package com.github.ojj11
+package edu.stanford.nlp.maxent
 
 object Convert {
     fun byteArrToDoubleArr(b: ByteArray): DoubleArray {

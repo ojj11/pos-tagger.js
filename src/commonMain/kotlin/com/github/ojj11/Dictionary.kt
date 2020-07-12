@@ -9,7 +9,7 @@ class Dictionary(private val dict: Map<String, TagCount>) {
     fun getCount(word: String?, tag: String?) = dict[word]?.get(tag) ?: 0
 
     /** Get tags for a given [word] */
-    fun getTags(word: String) = dict[word]?.tags ?: emptyArray()
+    fun getTags(word: String) = dict[word]?.tags ?: emptyArray
 
     /** Get the most frequent tag for [word], or [fallback] if [word] not found */
     fun getFirstTag(word: String, fallback: String) = dict[word]?.firstTag ?: fallback
@@ -20,3 +20,5 @@ class Dictionary(private val dict: Map<String, TagCount>) {
     /** Does the [word] not exist in this [Dictionary] */
     fun isUnknown(word: String) = !dict.containsKey(word)
 }
+
+private val emptyArray: Array<String> = emptyArray()

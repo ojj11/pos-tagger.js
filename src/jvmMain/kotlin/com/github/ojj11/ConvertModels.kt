@@ -5,6 +5,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.GZIPOutputStream
 
+/** Application to convert model formats to the Gzipped CBOR format preferred */
 internal object ConvertModels {
     @JvmStatic
     fun main(args: Array<String>) {
@@ -12,7 +13,7 @@ internal object ConvertModels {
         val dataSerializer = PureParameters.serializer()
         val cbor = kotlinx.serialization.cbor.Cbor()
 
-        File("originalModels/").listFiles().toList().filter {
+        (File("originalModels/").listFiles() ?: return).toList().filter {
             it.absolutePath.endsWith(".tagger")
         }.forEach { input ->
             println("Converting ${input.absolutePath}")

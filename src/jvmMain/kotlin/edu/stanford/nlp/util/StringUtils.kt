@@ -1,4 +1,4 @@
-package com.github.ojj11.util
+package edu.stanford.nlp.util
 
 import java.io.BufferedInputStream
 import java.io.FileInputStream

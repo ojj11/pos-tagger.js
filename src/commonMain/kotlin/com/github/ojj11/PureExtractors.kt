@@ -7,13 +7,13 @@ import kotlinx.serialization.Transient
 class PureExtractors(private val extractors: Array<PureExtractor>) {
 
     @Transient
-    val local: Map<Int, PureExtractor> = filter { isLocal() }
+    val local: Array<Pair<Int, PureExtractor>> = filter { isLocal() }
 
     @Transient
-    val dynamic: Map<Int, PureExtractor> = filter { isDynamic() }
+    val dynamic: Array<Pair<Int, PureExtractor>> = filter { isDynamic() }
 
     @Transient
-    val localContext: Map<Int, PureExtractor> = filter { !isLocal() && !isDynamic() }
+    val localContext: Array<Pair<Int, PureExtractor>> = filter { !isLocal() && !isDynamic() }
 
     val size = extractors.size
 
@@ -21,18 +21,15 @@ class PureExtractors(private val extractors: Array<PureExtractor>) {
 
     fun rightContext() = extractors.map { it.rightContext() }.max() ?: 0
 
-    fun setGlobalHolder(tagger: MaxentTagger) {
-        for (extractor in extractors) {
-            extractor.setGlobalHolder(tagger)
-        }
-    }
-
     operator fun get(index: Int) = extractors[index]
 
     private fun filter(predicate: PureExtractor.() -> Boolean) =
             extractors.withIndex()
                     .filter { it.value.run(predicate) }
                     .map { Pair(it.index, it.value) }
-                    .toMap()
-                    .toMutableMap()
+                    .toTypedArray()
+
+    fun combine(other: PureExtractors): PureExtractors {
+        return PureExtractors(extractors + other.extractors)
+    }
 }

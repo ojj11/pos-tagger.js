@@ -1,19 +1,24 @@
 const kotlin = require("./build/js/packages/StanfordPOS/kotlin/StanfordPOS.js");
 const parser = require("./parser.js");
+const zlib = require("zlib");
+const fs = require("fs");
 
 function Tagger(model) {
     this.tagger = new kotlin.tagger(model);
 }
 
 Tagger.readModelSync = function(path) {
-    return kotlin.readModelSync(path);
+  return zlib.gunzipSync(fs.readFileSync(__dirname + "/models/" + path + ".cbor.gz"));
+
 }
 
 Tagger.prototype.tag = function(string) {
     try {
-        return parser.parse(string).map(sentence => this.tagger.tag(sentence));
+      const out = parser.parse(string);
+      return out.map(sentence => this.tagger.tag(sentence));
     } catch(e) {
-        return parser.parse(string + ".").map(sentence => this.tagger.tag(sentence));
+      const out = parser.parse(string + ".");
+      return out.map(sentence => this.tagger.tag(sentence));
     }
 }
 

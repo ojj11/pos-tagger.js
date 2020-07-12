@@ -1,10 +1,17 @@
 package com.github.ojj11
 
+import edu.stanford.nlp.maxent.Convert
 import edu.stanford.nlp.tagger.maxent.*
 import java.io.ObjectInputStream
 
+data class UnoptimisedFeature(
+        val extractorIndex: Int,
+        val extractedValue: String,
+        val tag: String)
+
 object JavaLoadingTools {
 
+    /** code to handle marshaling from [ObjectInputStream] into the pure models */
     fun load(path: String): PureParameters {
 
         val config = TaggerConfig("-model", path)
@@ -66,9 +73,18 @@ object JavaLoadingTools {
             val value = rf.readUTF()
             // intern the tag strings as they are read, since there are few of them. This saves tons of memory.
             val tag = rf.readUTF()
-            val fK = Feature(num, value, tag)
-            Pair(fK, numF)
+            val fK = UnoptimisedFeature(num, value, tag)
+            fK to numF
         }.toMap()
+
+        val optimisedFeatures = fAssociations.entries.groupBy {
+            Feature(it.key.extractorIndex, it.key.extractedValue)
+        }.mapValues {
+            it.value.map {
+                it.key.tag to it.value
+            }.toMap()
+        }
+
         val funsize = rf.readInt()
         val b = ByteArray(funsize * 8)
         if (rf.read(b) != b.size) {
@@ -95,14 +111,14 @@ object JavaLoadingTools {
                 ySize,
                 PureExtractors(extractors.v.convert()),
                 PureExtractors(extractorsRare.v.convert()),
-                fAssociations,
                 lambda,
                 dict,
                 TTags(tags.toTypedArray(), open.toTypedArray()),
                 config.defaultScore,
                 config.learnClosedClassTags,
                 config.lang,
-                config.rareWordThresh)
+                config.rareWordThresh,
+                optimisedFeatures)
     }
 
     private fun convertExtractor(extractor: Extractor): PureExtractor {

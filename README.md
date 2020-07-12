@@ -5,10 +5,10 @@
 This is a Kotlin port of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml), it is compiled to JavaScript and made available through npm. No background Java service is needed.
 
 This module includes two models:
- - bidirectional-distsim-wsj-0-18
  - left3words-wsj-0-18
+ - bidirectional-distsim-wsj-0-18
 
-The total package size is around 11mb.
+The total package size (including both models) is under 10mb.
 
     Author: Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer
     License: GPL v2 or above

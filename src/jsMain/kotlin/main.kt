@@ -1,14 +1,7 @@
 import com.github.ojj11.MaxentTagger
 import com.github.ojj11.PureParameters
 
-@JsExport
-@JsName("readModelSync")
-fun readModelSync(file: String): dynamic {
-    return js("""
-        require("zlib").gunzipSync(require("fs").readFileSync(__dirname + "/../../../../../models/" + file + ".cbor.gz"))
-    """)
-}
-
+/** Exportable copy of [TaggedWord] */
 @JsExport
 data class Output(val word: String, var tag: String?)
 

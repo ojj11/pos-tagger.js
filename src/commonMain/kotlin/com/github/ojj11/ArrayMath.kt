@@ -24,33 +24,56 @@ object ArrayMath {
     }
 
     /**
-     * sums the log probabilities in [logInputs] including elements [fromIndex] to exclusive
-     * [toIndex]
+     * sums the log probabilities in [logInputs]
      */
-    fun logSum(logInputs: DoubleArray, fromIndex: Int = 0, toIndex: Int = logInputs.size): Double {
-        if (fromIndex >= 0 && toIndex < logInputs.size && fromIndex >= toIndex) return Double.NEGATIVE_INFINITY
-        var maxIdx = fromIndex
-        var max = logInputs[fromIndex]
-        for (i in fromIndex + 1 until toIndex) {
-            if (logInputs[i] > max) {
-                maxIdx = i
-                max = logInputs[i]
+    fun logSum(logInputs: DoubleArray): Double {
+
+        return when (val size = logInputs.size) {
+            1 -> logInputs[0]
+            2 -> logSumTwoNumbers(logInputs[0], logInputs[1])
+            else -> {
+
+                var maxIdx = 0
+                var max = logInputs[0]
+                for (i in 1 until size) {
+                    if (logInputs[i] > max) {
+                        maxIdx = i
+                        max = logInputs[i]
+                    }
+                }
+                var haveTerms = false
+                var intermediate = 0.0
+                val cutoff = max - LOG_TOLERANCE
+                // we avoid rearranging the array and so test indices each time!
+                for (i in 0 until size) {
+                    if (i != maxIdx && logInputs[i] > cutoff) {
+                        haveTerms = true
+                        intermediate += exp(logInputs[i] - max)
+                    }
+                }
+
+                if (haveTerms) {
+                    max + ln(1.0 + intermediate)
+                } else {
+                    max
+                }
             }
         }
-        var haveTerms = false
-        var intermediate = 0.0
-        val cutoff = max - LOG_TOLERANCE
-        // we avoid rearranging the array and so test indices each time!
-        for (i in fromIndex until toIndex) {
-            if (i != maxIdx && logInputs[i] > cutoff) {
-                haveTerms = true
-                intermediate += exp(logInputs[i] - max)
+    }
+
+    fun logSumTwoNumbers(a: Double, b: Double): Double {
+        return if (a < b) {
+            if (a > b - LOG_TOLERANCE) {
+                b + ln(1.0 + exp(a - b))
+            } else {
+                b
             }
-        }
-        return if (haveTerms) {
-            max + ln(1.0 + intermediate)
         } else {
-            max
+            if (b > a - LOG_TOLERANCE) {
+                a + ln(1.0 + exp(b - a))
+            } else {
+                a
+            }
         }
     }
 

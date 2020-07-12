@@ -11,13 +11,11 @@ sealed class PureExtractor {
         return Int.MAX_VALUE
     }
 
-    open fun setGlobalHolder(tagger: MaxentTagger) {}
-
     open fun leftContext() = 0
 
     open fun rightContext() = 0
 
-    abstract fun extract(pH: PairsHolder): String
+    abstract fun extract(pH: PairsHolder, dict: Dictionary): String
 
     abstract fun isDynamic(): Boolean
 
@@ -36,7 +34,7 @@ class PureExtractorBasic(
         private var privateIsDynamic: Boolean = false
 ) : PureExtractor() {
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return if (isDynamic()) pH.getTag(getPosition()) else pH.getWord(getPosition())
     }
 
@@ -71,7 +69,7 @@ class PureExtractorWordLowerCase(private var privatePosition: Int) : PureExtract
 
     override fun getPosition() = privatePosition
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return pH.getWord(privatePosition).toLowerCase()
     }
 
@@ -88,7 +86,7 @@ class PureExtractorWordLowerCase(private var privatePosition: Int) : PureExtract
 class PureExtractorTwoWords(private var privatePosition: Int) : PureExtractor() {
     override fun getPosition() = privatePosition
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getWord(privatePosition)}!${pH.getWord(privatePosition + 1)}"""
     }
 
@@ -102,7 +100,7 @@ class PureExtractorTwoWords(private var privatePosition: Int) : PureExtractor() 
  */
 @Serializable
 class PureExtractorCWordNextWord : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return pH.getWord(0) + '!' + pH.getWord(1)
     }
 
@@ -116,7 +114,7 @@ class PureExtractorCWordNextWord : PureExtractor() {
  */
 @Serializable
 class PureExtractorCWordPrevWord : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return pH.getWord(-1) + '!' + pH.getWord(0)
     }
 
@@ -134,7 +132,7 @@ class PureExtractorPrevTwoTags : PureExtractor() {
         return 2
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return pH.getTag(-1) + '!' + pH.getTag(-2)
     }
 
@@ -152,7 +150,7 @@ class PureExtractorPrevThreeTags : PureExtractor() {
         return 3
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getTag(-1)}!${pH.getTag(-2)}!${pH.getTag(-3)}"""
     }
 
@@ -170,7 +168,7 @@ class PureExtractorNextTwoTags : PureExtractor() {
         return 2
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getTag(1)}!${pH.getTag(2)}"""
     }
 
@@ -188,7 +186,7 @@ class PureExtractorPrevTagWord : PureExtractor() {
         return 1
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getTag(-1)}!${pH.getWord(0)}"""
     }
 
@@ -210,7 +208,7 @@ class PureExtractorPrevTagNextTag : PureExtractor() {
         return 1
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getTag(-1)}!${pH.getTag(1)}"""
     }
 
@@ -228,7 +226,7 @@ class PureExtractorNextTagWord : PureExtractor() {
         return 1
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return """${pH.getTag(1)}!${pH.getWord(0)}"""
     }
 
@@ -245,7 +243,7 @@ class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) 
         return companyNameEnds.contains(s)
     }
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         if (!startsUpperCase(s)) {
             return "0"
@@ -267,19 +265,19 @@ class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) 
         companyNameEnds.add("Company")
         companyNameEnds.add("COMPANY")
         companyNameEnds.add("Co.")
-        companyNameEnds.add("Co") // at end of sentence in PTB
+        companyNameEnds.add("Co") 
         companyNameEnds.add("Cos.")
         companyNameEnds.add("CO.")
         companyNameEnds.add("COS.")
         companyNameEnds.add("Corporation")
         companyNameEnds.add("CORPORATION")
         companyNameEnds.add("Corp.")
-        companyNameEnds.add("Corp") // at end of sentence in PTB
+        companyNameEnds.add("Corp") 
         companyNameEnds.add("CORP.")
         companyNameEnds.add("Incorporated")
         companyNameEnds.add("INCORPORATED")
         companyNameEnds.add("Inc.")
-        companyNameEnds.add("Inc") // at end of sentence in PTB
+        companyNameEnds.add("Inc") 
         companyNameEnds.add("INC.")
         companyNameEnds.add("Association")
         companyNameEnds.add("ASSOCIATION")
@@ -290,13 +288,13 @@ class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) 
         companyNameEnds.add("Ltd.")
         companyNameEnds.add("LTD.")
         companyNameEnds.add("L.P.")
-        // companyNameEnds.add("PLC"); // Other thing added at same time.
+        
     }
-} // end class CompanyNameDetector
+} 
 
 @Serializable
 class PureExtractorUCase : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (containsUpperCase(s)) {
             "1"
@@ -310,7 +308,7 @@ class PureExtractorUCase : PureExtractor() {
 
 @Serializable
 class PureExtractorLetterDigitDash : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (containsLetter(s) && containsDash(s) && containsNumber(s)) {
             "1"
@@ -324,7 +322,7 @@ class PureExtractorLetterDigitDash : PureExtractor() {
 
 @Serializable
 class PureExtractorUpperDigitDash : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (containsUpperCase(s) && containsDash(s) && containsNumber(s)) {
             "1"
@@ -344,7 +342,7 @@ class PureExtractorUpperDigitDash : PureExtractor() {
  */
 @Serializable
 class PureExtractorCapDistLC : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val word = pH.getWord(0)
         val ret: String
         if (!startsUpperCase(word)) {
@@ -356,7 +354,7 @@ class PureExtractorCapDistLC : PureExtractor() {
             "start"
         }
 
-        //now find the distance
+        
         var current = -1
         var distance = 1
         while (true) {
@@ -393,20 +391,13 @@ class PureExtractorCapLCSeen(val tag: String?) : PureExtractor() {
     @kotlinx.serialization.Transient
     private val cCapDist: PureExtractor = PureExtractorCapDistLC()
 
-    @kotlinx.serialization.Transient
-    private lateinit var dict: Dictionary
-
-    override fun setGlobalHolder(tagger: MaxentTagger) {
-        dict = tagger.dict
-    }
-
-    override fun extract(pH: PairsHolder): String {
-        val res = cCapDist.extract(pH)
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
+        val res = cCapDist.extract(pH, dict)
         if (res == "0") {
             return res
         }
-        //otherwise it is capitalized
-        val word = cWord.extract(pH)
+        
+        val word = cWord.extract(pH, dict)
         return if (dict.getCount(word, tag) > cutoff) {
             res + tag
         } else {
@@ -424,7 +415,7 @@ class PureExtractorCapLCSeen(val tag: String?) : PureExtractor() {
  */
 @Serializable
 class PureExtractorMidSentenceCap : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val prevTag = pH.getTag(-1)
         if (prevTag == naTag) {
             return "0"
@@ -447,14 +438,7 @@ class PureExtractorMidSentenceCap : PureExtractor() {
 @Serializable
 class PureExtractorStartSentenceCap : PureExtractor() {
 
-    @kotlinx.serialization.Transient
-    private lateinit var dict: Dictionary
-
-    override fun setGlobalHolder(tagger: MaxentTagger) {
-        dict = tagger.dict
-    }
-
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val prevTag = pH.getTag(-1)
         if (prevTag != naTag) {
             return zeroSt
@@ -480,14 +464,7 @@ class PureExtractorStartSentenceCap : PureExtractor() {
 @Serializable
 class PureExtractorMidSentenceCapC : PureExtractor() {
 
-    @kotlinx.serialization.Transient
-    private lateinit var dict: Dictionary
-
-    override fun setGlobalHolder(tagger: MaxentTagger) {
-        dict = tagger.dict
-    }
-
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val prevTag = pH.getTag(-1)
         if (prevTag == naTag) {
             return zeroSt
@@ -503,14 +480,14 @@ class PureExtractorMidSentenceCapC : PureExtractor() {
     override fun isLocal() = false
 
     override fun isDynamic() = true
-} // TODO: the next time we have to rebuild the tagger files anyway, we
+} 
 
-// should change this class's name to something like
-// "ExtractorNoLowercase" to distinguish it from
-// ExtractorAllCapitalized
+
+
+
 @Serializable
 class PureExtractorAllCap : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (noneLowerCase(s)) {
             "1"
@@ -524,7 +501,7 @@ class PureExtractorAllCap : PureExtractor() {
 
 @Serializable
 class PureExtractorAllCapitalized : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (allUpperCase(s)) {
             "1"
@@ -538,7 +515,7 @@ class PureExtractorAllCapitalized : PureExtractor() {
 
 @Serializable
 class PureExtractorCNumber : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (s.contains(Regex("\\d"))) {
             "1"
@@ -554,7 +531,7 @@ class PureExtractorCNumber : PureExtractor() {
 
 @Serializable
 class PureExtractorDash : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = pH.getWord(0)
         return if (containsDash(s)) {
             "1"
@@ -570,7 +547,7 @@ class PureExtractorDash : PureExtractor() {
 
 @Serializable
 class PureExtractorCWordSuff(private val num: Int) : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val word = pH.getWord(0)
         return if (word.length < num) {
             "######"
@@ -590,7 +567,7 @@ class PureExtractorCWordSuff(private val num: Int) : PureExtractor() {
 
 @Serializable
 class PureExtractorCWordPref(private val num: Int) : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val word = pH.getWord(0)
         return if (word.length < num) {
             "######"
@@ -606,7 +583,7 @@ class PureExtractorCWordPref(private val num: Int) : PureExtractor() {
     override fun isLocal() = true
 
     override fun isDynamic() = false
-} // end class ExtractorCWordPref
+} 
 
 @Serializable
 class PureExtractorsConjunction(private val extractor1: PureExtractor, private val extractor2: PureExtractor) : PureExtractor() {
@@ -614,17 +591,12 @@ class PureExtractorsConjunction(private val extractor1: PureExtractor, private v
     private val privateIsLocal: Boolean = extractor1.isLocal() && extractor2.isLocal()
     private val privateIsDynamic: Boolean = extractor1.isDynamic() || extractor2.isDynamic()
 
-    override fun setGlobalHolder(tagger: MaxentTagger) {
-        extractor1.setGlobalHolder(tagger)
-        extractor2.setGlobalHolder(tagger)
-    }
-
-    override fun extract(pH: PairsHolder): String {
-        val ex1 = extractor1.extract(pH)
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
+        val ex1 = extractor1.extract(pH, dict)
         if (ex1 == zeroSt) {
             return zeroSt
         }
-        val ex2 = extractor2.extract(pH)
+        val ex2 = extractor2.extract(pH, dict)
         return if (ex2 == zeroSt) {
             zeroSt
         } else {
@@ -642,7 +614,7 @@ class PureExtractorWordShapeClassifier(private val position: Int, private val wo
 
     override fun getPosition() = position
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val s = if (isDynamic()) pH.getTag(getPosition()) else pH.getWord(getPosition())
         return WordShapeClassifier.wordShape(s, wordShaper)
     }
@@ -657,7 +629,7 @@ class PureExtractorWordShapeClassifier(private val position: Int, private val wo
  */
 @Serializable
 class PureExtractorWordShapeConjunction(private val left: Int, private val right: Int, private val wordShaper: Int) : PureExtractor() {
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val sb = StringBuilder()
         for (j in left..right) {
             val s = pH.getWord(j)
@@ -684,22 +656,8 @@ class PureExtractorWordShapeConjunction(private val left: Int, private val right
  */
 @Serializable
 open class PureDictionaryExtractor : PureExtractor() {
-    /**
-     * A pointer to the creating / owning tagger's dictionary.
-     */
-    @kotlinx.serialization.Transient
-    protected lateinit var dict: Dictionary
 
-    /**
-     * Any subclass of this extractor that overrides setGlobalHolder
-     * should call this class's setGlobalHolder as well...
-     */
-    override fun setGlobalHolder(tagger: MaxentTagger) {
-        super.setGlobalHolder(tagger)
-        dict = tagger.dict
-    }
-
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         return if (isDynamic()) pH.getTag(getPosition()) else pH.getWord(getPosition())
     }
 
@@ -717,13 +675,13 @@ open class PureDictionaryExtractor : PureExtractor() {
 @Serializable
 class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtractor() {
 
-    override fun extract(pH: PairsHolder): String {
+    override fun extract(pH: PairsHolder, dict: Dictionary): String {
         val cword = pH.getWord(0)
         val allCount = dict.sum(cword)
         val vBNCount = dict.getCount(cword, vbnTag)
         val vBDCount = dict.getCount(cword, vbdTag)
 
-        // Conditions for deciding inapplicable
+        
         if (allCount == 0 && !(cword.endsWith(edSuff) || cword.endsWith(enSuff))) {
             return zeroSt
         }
@@ -765,7 +723,7 @@ class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtract
         private const val oneSt = "1"
         private const val naWord = "NA"
         private val stopper = Regex("(?i:and|or|but|,|;|-|--)")
-        private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)") // cf. list in EnglishPTBTreebankCorrector
+        private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)") 
     }
 }
 
