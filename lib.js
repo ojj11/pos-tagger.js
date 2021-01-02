@@ -1,4 +1,4 @@
-const kotlin = require("./build/js/packages/StanfordPOS/kotlin/StanfordPOS.js");
+const kotlin = require("./build/js/packages/posTagger/kotlin/posTagger.js");
 const parser = require("./parser.js");
 const zlib = require("zlib");
 const fs = require("fs");

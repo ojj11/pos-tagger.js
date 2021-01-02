@@ -1,14 +1,14 @@
-# stanford-tagger.js
+# pos-tagger.js
 
 > A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc., although generally computational applications use more fine-grained POS tags like 'noun-plural'.
 
-This is a Kotlin port of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml), it is compiled to JavaScript and made available through npm. No background Java service is needed.
+This is a rewrite of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml) in Kotlin, it is compiled to JavaScript and made available through npm. No background Java service is needed.
 
 This module includes two models:
  - left3words-wsj-0-18
  - bidirectional-distsim-wsj-0-18
 
-The total package size (including both models) is under 10mb.
+The total package size (including both models) is under 10mb. Basic benchmarks show that the JavaScript library has similar performance to that of the original Java code for the "left3words" model.
 
     Author: Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer
     License: GPL v2 or above
@@ -16,7 +16,7 @@ The total package size (including both models) is under 10mb.
 ## Usage
 
 ```javascript
-const Tagger = require("stanford-tagger.js");
+const Tagger = require("pos-tagger.js");
 const tagger = new Tagger(Tagger.readModelSync("left3words-wsj-0-18"));
 
 // alternatively

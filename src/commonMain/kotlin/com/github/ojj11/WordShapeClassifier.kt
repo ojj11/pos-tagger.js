@@ -365,7 +365,7 @@ object WordShapeClassifier {
             for (gr in greek) {
                 if (s.startsWith(gr, i)) {
                     m = 'g'
-                    //System.out.println(s + "  ::  " + s.substring(i+1));
+                    // System.out.println(s + "  ::  " + s.substring(i+1));
                     i += gr.length - 1
                     // System.out.println("Position skips to " + i);
                     break
@@ -400,7 +400,7 @@ object WordShapeClassifier {
                 if (s.startsWith(gr, i)) {
                     m = 'g'
                     iIncr = gr.length - 1
-                    //System.out.println(s + "  ::  " + s.substring(i+1));
+                    // System.out.println(s + "  ::  " + s.substring(i+1));
                     break
                 }
             }

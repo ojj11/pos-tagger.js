@@ -1,0 +1,38 @@
+name: Build and test the library
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Set up Node.js 14.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+
+    - name: Compile Kotlin
+      run: ./gradlew build
+
+    - name: Convert models
+      run: ./gradlew convertModels
+
+    - name: Instal NPM dependencies
+      run: npm ci
+
+    - name: Build PEG Treebank parser
+      run: npm run pegjs -- parser.pegjs
+
+    - name: Test library
+      run: npm test
