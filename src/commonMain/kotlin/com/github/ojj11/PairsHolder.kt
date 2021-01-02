@@ -8,9 +8,9 @@ class PairsHolder(sentence: Array<String>, var offset: Int = 0) {
         arr[pos].tag = tag
     }
 
-    /** gets the word at the given position */
+    /** gets the word at the given [position] */
     fun getWord(position: Int) = arr.getOrNull(offset + position)?.word ?: "NA"
 
-    /** gets the tag at the given position */
+    /** gets the tag at the given [position] */
     fun getTag(position: Int) = arr.getOrNull(offset + position)?.tag ?: "NN"
 }

@@ -4,25 +4,26 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 /**
- * The feature extractors to use for tagging
+ * The feature extractors to use for tagging, use [local], [dynamic] and
+ * [localContext] fields.
  */
 @Serializable
 class PureExtractors(private val extractors: Array<PureExtractor>) {
 
     /**
-     * The extractors that affect the local score
+     * The extractors that contribute to the local score
      */
     @Transient
     val local: Array<Pair<Int, PureExtractor>> = filter { isLocal() }
 
     /**
-     * The extractors that affect the total score
+     * The extractors that contribute to the total score
      */
     @Transient
     val dynamic: Array<Pair<Int, PureExtractor>> = filter { isDynamic() }
 
     /**
-     * The extractors that affect the local context score
+     * The extractors that contribute to the local context score
      */
     @Transient
     val localContext: Array<Pair<Int, PureExtractor>> = filter { !isLocal() && !isDynamic() }

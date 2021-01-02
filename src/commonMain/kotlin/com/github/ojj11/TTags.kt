@@ -3,7 +3,7 @@ package com.github.ojj11
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-/** a data structure for quickly mapping tags between string an numerical index */
+/** a data structure for quickly mapping tags between string and numerical index form */
 @Serializable
 class TTags(
     val tags: Array<String>,

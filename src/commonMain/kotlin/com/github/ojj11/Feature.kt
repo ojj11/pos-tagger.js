@@ -3,8 +3,8 @@ package com.github.ojj11
 import kotlinx.serialization.Serializable
 
 /**
- * Sparse [Feature] consisting of the index of the [Extractor] as [extractorIndex], the
- * [extractedValue] and the [tag]
+ * Sparse [Feature] consisting of the index of the [Extractor] as [extractorIndex], and
+ * the weight as [extractedValue]
  */
 @Serializable
 data class Feature(

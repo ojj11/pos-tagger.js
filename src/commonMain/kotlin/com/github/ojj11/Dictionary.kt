@@ -2,7 +2,7 @@ package com.github.ojj11
 
 import kotlinx.serialization.Serializable
 
-/** A [Dictionary] of strings to [TagCount] */
+/** A [Dictionary] of strings to [TagCount]s */
 @Serializable
 class Dictionary(private val dict: Map<String, TagCount>) {
     /** Get the number of times [word] with [tag] exists in the dictionary */
