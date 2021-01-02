@@ -7,9 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class PureExtractor {
 
-    open fun getPosition(): Int {
-        return Int.MAX_VALUE
-    }
+    open fun getPosition() = 0
 
     open fun leftContext() = 0
 
@@ -30,8 +28,8 @@ val cWord = PureExtractorBasic(0, false)
 
 @Serializable
 class PureExtractorBasic(
-        private var privatePosition: Int = Int.MAX_VALUE,
-        private var privateIsDynamic: Boolean = false
+    private var privatePosition: Int = Int.MAX_VALUE,
+    private var privateIsDynamic: Boolean = false
 ) : PureExtractor() {
 
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -61,9 +59,6 @@ class PureExtractorBasic(
     override fun isDynamic() = privateIsDynamic
 }
 
-/**
- * The word in lower-cased version.
- */
 @Serializable
 class PureExtractorWordLowerCase(private var privatePosition: Int) : PureExtractor() {
 
@@ -78,10 +73,6 @@ class PureExtractorWordLowerCase(private var privatePosition: Int) : PureExtract
     override fun isDynamic() = false
 }
 
-/**
- * This extractor extracts two consecutive words in conjunction,
- * namely leftPosition and leftPosition+1.
- */
 @Serializable
 class PureExtractorTwoWords(private var privatePosition: Int) : PureExtractor() {
     override fun getPosition() = privatePosition
@@ -95,9 +86,6 @@ class PureExtractorTwoWords(private var privatePosition: Int) : PureExtractor() 
     override fun isDynamic() = false
 }
 
-/**
- * This extractor extracts the current and the next word in conjunction.
- */
 @Serializable
 class PureExtractorCWordNextWord : PureExtractor() {
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -109,9 +97,6 @@ class PureExtractorCWordNextWord : PureExtractor() {
     override fun isDynamic() = false
 }
 
-/**
- * This extractor extracts the current and the previous word in conjunction.
- */
 @Serializable
 class PureExtractorCWordPrevWord : PureExtractor() {
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -123,9 +108,6 @@ class PureExtractorCWordPrevWord : PureExtractor() {
     override fun isDynamic() = false
 }
 
-/**
- * This extractor extracts the previous two tags.
- */
 @Serializable
 class PureExtractorPrevTwoTags : PureExtractor() {
     override fun leftContext(): Int {
@@ -141,9 +123,6 @@ class PureExtractorPrevTwoTags : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * This extractor extracts the previous three tags.
- */
 @Serializable
 class PureExtractorPrevThreeTags : PureExtractor() {
     override fun leftContext(): Int {
@@ -159,9 +138,6 @@ class PureExtractorPrevThreeTags : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * This extractor extracts the next two tags.
- */
 @Serializable
 class PureExtractorNextTwoTags : PureExtractor() {
     override fun rightContext(): Int {
@@ -177,9 +153,6 @@ class PureExtractorNextTwoTags : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * This extractor extracts the previous tag and the current word in conjunction.
- */
 @Serializable
 class PureExtractorPrevTagWord : PureExtractor() {
     override fun leftContext(): Int {
@@ -195,9 +168,6 @@ class PureExtractorPrevTagWord : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * This extractor extracts the previous tag , next tag in conjunction.
- */
 @Serializable
 class PureExtractorPrevTagNextTag : PureExtractor() {
     override fun leftContext(): Int {
@@ -217,9 +187,6 @@ class PureExtractorPrevTagNextTag : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * This extractor extracts the next tag and the current word in conjunction.
- */
 @Serializable
 class PureExtractorNextTagWord : PureExtractor() {
     override fun rightContext(): Int {
@@ -235,7 +202,6 @@ class PureExtractorNextTagWord : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/** English-specific crude company name NER.  */
 @Serializable
 class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) : PureExtractor() {
 
@@ -265,19 +231,19 @@ class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) 
         companyNameEnds.add("Company")
         companyNameEnds.add("COMPANY")
         companyNameEnds.add("Co.")
-        companyNameEnds.add("Co") 
+        companyNameEnds.add("Co")
         companyNameEnds.add("Cos.")
         companyNameEnds.add("CO.")
         companyNameEnds.add("COS.")
         companyNameEnds.add("Corporation")
         companyNameEnds.add("CORPORATION")
         companyNameEnds.add("Corp.")
-        companyNameEnds.add("Corp") 
+        companyNameEnds.add("Corp")
         companyNameEnds.add("CORP.")
         companyNameEnds.add("Incorporated")
         companyNameEnds.add("INCORPORATED")
         companyNameEnds.add("Inc.")
-        companyNameEnds.add("Inc") 
+        companyNameEnds.add("Inc")
         companyNameEnds.add("INC.")
         companyNameEnds.add("Association")
         companyNameEnds.add("ASSOCIATION")
@@ -288,9 +254,8 @@ class PureCompanyNameDetector(private val companyNameEnds: MutableSet<String?>) 
         companyNameEnds.add("Ltd.")
         companyNameEnds.add("LTD.")
         companyNameEnds.add("L.P.")
-        
     }
-} 
+}
 
 @Serializable
 class PureExtractorUCase : PureExtractor() {
@@ -334,12 +299,6 @@ class PureExtractorUpperDigitDash : PureExtractor() {
     override fun isDynamic() = false
 }
 
-/**
- * creates features which are true if the current word is all caps
- * and the distance to the first lowercase word to the left is dist
- * the distance is 1 for adjacent, 2 for one across, 3 for ... and so on.
- * inifinity if no capitalized word (we hit the start of sentence or '')
- */
 @Serializable
 class PureExtractorCapDistLC : PureExtractor() {
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -354,7 +313,6 @@ class PureExtractorCapDistLC : PureExtractor() {
             "start"
         }
 
-        
         var current = -1
         var distance = 1
         while (true) {
@@ -375,13 +333,6 @@ class PureExtractorCapDistLC : PureExtractor() {
     override fun isLocal() = false
 }
 
-/**
- * This feature applies when the word is capitalized
- * and the previous lower case is infinity
- * and the lower cased version of it has occured 2 or more times with tag t
- * false if the word was not seen.
- * create features only for tags that are the same as the tag t
- */
 @Serializable
 class PureExtractorCapLCSeen(val tag: String?) : PureExtractor() {
 
@@ -396,7 +347,7 @@ class PureExtractorCapLCSeen(val tag: String?) : PureExtractor() {
         if (res == "0") {
             return res
         }
-        
+
         val word = cWord.extract(pH, dict)
         return if (dict.getCount(word, tag) > cutoff) {
             res + tag
@@ -410,9 +361,6 @@ class PureExtractorCapLCSeen(val tag: String?) : PureExtractor() {
     override fun isDynamic() = false
 }
 
-/**
- * "1" if not first word of sentence and _some_ letter is uppercase
- */
 @Serializable
 class PureExtractorMidSentenceCap : PureExtractor() {
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -431,10 +379,6 @@ class PureExtractorMidSentenceCap : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * "0" if not 1st word of sentence or not upper case, or lowercased version
- * not in dictionary.  Else first tag of word lowercased.
- */
 @Serializable
 class PureExtractorStartSentenceCap : PureExtractor() {
 
@@ -456,11 +400,6 @@ class PureExtractorStartSentenceCap : PureExtractor() {
     override fun isDynamic() = true
 }
 
-/**
- * "0" if first word of sentence or not first letter uppercase or if
- * lowercase version isn't in dictionary.  Otherwise first tag of lowercase
- * equivalent.
- */
 @Serializable
 class PureExtractorMidSentenceCapC : PureExtractor() {
 
@@ -480,10 +419,7 @@ class PureExtractorMidSentenceCapC : PureExtractor() {
     override fun isLocal() = false
 
     override fun isDynamic() = true
-} 
-
-
-
+}
 
 @Serializable
 class PureExtractorAllCap : PureExtractor() {
@@ -583,7 +519,7 @@ class PureExtractorCWordPref(private val num: Int) : PureExtractor() {
     override fun isLocal() = true
 
     override fun isDynamic() = false
-} 
+}
 
 @Serializable
 class PureExtractorsConjunction(private val extractor1: PureExtractor, private val extractor2: PureExtractor) : PureExtractor() {
@@ -624,9 +560,6 @@ class PureExtractorWordShapeClassifier(private val position: Int, private val wo
     override fun isDynamic() = false
 }
 
-/**
- * This extractor extracts a conjunction of word shapes.
- */
 @Serializable
 class PureExtractorWordShapeConjunction(private val left: Int, private val right: Int, private val wordShaper: Int) : PureExtractor() {
     override fun extract(pH: PairsHolder, dict: Dictionary): String {
@@ -646,14 +579,6 @@ class PureExtractorWordShapeConjunction(private val left: Int, private val right
     override fun isDynamic() = false
 }
 
-/**
- * This class is the same as a regular Extractor, but keeps a pointer
- * to the tagger's dictionary as well.
- *
- * Obviously that means this kind of extractor is not reusable across
- * multiple taggers (see comments Extractor.java), so no extractor of
- * this type should be declared static.
- */
 @Serializable
 open class PureDictionaryExtractor : PureExtractor() {
 
@@ -664,14 +589,6 @@ open class PureDictionaryExtractor : PureExtractor() {
     override fun isDynamic() = false
 }
 
-/**
- * Look for verbs selecting a VBN verb.
- * This is now a zeroeth order observed data only feature.
- * But reminiscent of what was done in Toutanova and Manning 2000.
- * It doesn't seem to help tagging performance any more.
- *
- * @author Christopher Manning
- */
 @Serializable
 class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtractor() {
 
@@ -681,7 +598,6 @@ class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtract
         val vBNCount = dict.getCount(cword, vbnTag)
         val vBDCount = dict.getCount(cword, vbdTag)
 
-        
         if (allCount == 0 && !(cword.endsWith(edSuff) || cword.endsWith(enSuff))) {
             return zeroSt
         }
@@ -723,109 +639,24 @@ class PureExtractorVerbalVBNZero(private val bound: Int) : PureDictionaryExtract
         private const val oneSt = "1"
         private const val naWord = "NA"
         private val stopper = Regex("(?i:and|or|but|,|;|-|--)")
-        private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)") 
+        private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)")
     }
 }
 
 private const val naTag = "NA"
-fun startsUpperCase(s: String?): Boolean {
-    if (s == null || s.isEmpty()) {
-        return false
-    }
-    val ch = s[0]
-    return Character.isUpperCase(ch)
-}
 
-/**
- * a string is lowercase if it starts with a lowercase letter
- * such as one from a to z.
- * Should we include numbers?
- * @param s The String to check
- * @return If its first character is lower case
- */
-fun startsLowerCase(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    val ch = s[0]
-    return Character.isLowerCase(ch)
-}
+fun startsUpperCase(s: String?) = s?.first()?.let { Character.isUpperCase(it) } ?: false
 
-fun containsDash(s: String?): Boolean {
-    return s != null && s.indexOf('-') >= 0
-}
+fun startsLowerCase(s: String?) = s?.first()?.let { Character.isLowerCase(it) } ?: false
 
-fun containsNumber(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    var i = 0
-    val len = s.length
-    while (i < len) {
-        if (Character.isDigit(s[i])) {
-            return true
-        }
-        i++
-    }
-    return false
-}
+fun containsDash(s: String?) = s?.any { it == '-' } ?: false
 
-fun containsLetter(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    var i = 0
-    val len = s.length
-    while (i < len) {
-        if (Character.isLetter(s[i])) {
-            return true
-        }
-        i++
-    }
-    return false
-}
+fun containsNumber(s: String?) = s?.any { Character.isDigit(it) } ?: false
 
-fun containsUpperCase(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    var i = 0
-    val len = s.length
-    while (i < len) {
-        if (Character.isUpperCase(s[i])) {
-            return true
-        }
-        i++
-    }
-    return false
-}
+fun containsLetter(s: String?) = s?.any { Character.isLetter(it) } ?: false
 
-fun allUpperCase(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    var i = 0
-    val len = s.length
-    while (i < len) {
-        if (!Character.isUpperCase(s[i])) {
-            return false
-        }
-        i++
-    }
-    return true
-}
+fun containsUpperCase(s: String?) = s?.any { Character.isUpperCase(it) } ?: false
 
-fun noneLowerCase(s: String?): Boolean {
-    if (s == null) {
-        return false
-    }
-    var i = 0
-    val len = s.length
-    while (i < len) {
-        if (Character.isLowerCase(s[i])) {
-            return false
-        }
-        i++
-    }
-    return true
-}
+fun allUpperCase(s: String?) = s?.all { Character.isUpperCase(it) } ?: false
+
+fun noneLowerCase(s: String?) = s?.all { !Character.isLowerCase(it) } ?: false

@@ -35,9 +35,9 @@ import java.io.Serializable
  * @author Kristina Toutanova
  * @version 1.0
  */
-open class Extractor (
-        open val position: Int = Int.MAX_VALUE,
-        val isTag: Boolean = false
+open class Extractor(
+    open val position: Int = Int.MAX_VALUE,
+    val isTag: Boolean = false
 ) : Serializable {
 
     companion object {

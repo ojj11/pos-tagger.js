@@ -2,9 +2,15 @@ package edu.stanford.nlp.tagger.maxent
 
 import edu.stanford.nlp.util.StringUtils
 import edu.stanford.nlp.util.StringUtils.argsToProperties
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.DataInputStream
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.ObjectInputStream
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.net.URL
-import java.util.*
+import java.util.Properties
 import java.util.zip.GZIPInputStream
 import kotlin.collections.HashMap
 import kotlin.system.exitProcess
@@ -347,15 +353,15 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
             mode = Mode.CONVERT
             setProperty("file", props.getProperty("convertToSingleFile").trim { it <= ' ' })
         } else if (props.containsKey("trainFile")) {
-            //Training mode
+            // Training mode
             mode = Mode.TRAIN
             setProperty("file", props.getProperty("trainFile", "").trim { it <= ' ' })
         } else if (props.containsKey("testFile")) {
-            //Testing mode
+            // Testing mode
             mode = Mode.TEST
             setProperty("file", props.getProperty("testFile", "").trim { it <= ' ' })
         } else if (props.containsKey("textFile")) {
-            //Tagging mode
+            // Tagging mode
             mode = Mode.TAG
             setProperty("file", props.getProperty("textFile", "").trim { it <= ' ' })
         } else if (props.containsKey("dump")) {
@@ -366,16 +372,16 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
             mode = Mode.TAG
             setProperty("file", "stdin")
         }
-        //for any mode other than train, we load a classifier, which means we load a config - model always needs to be specified
-        //on command line/in props file
-        //Get the path to the model (or the path where you'd like to save the model); this is necessary for training, testing, and tagging
+        // for any mode other than train, we load a classifier, which means we load a config - model always needs to be specified
+        // on command line/in props file
+        // Get the path to the model (or the path where you'd like to save the model); this is necessary for training, testing, and tagging
         setProperty("model", props.getProperty("model", "").trim { it <= ' ' })
         if (mode != Mode.DUMP && this.getProperty("model") == "") {
             throw RuntimeException("'model' parameter must be specified")
         }
 
         /* Try and use the default properties from the model */
-        //Properties modelProps = new Properties();
+        // Properties modelProps = new Properties();
         val oldConfig = TaggerConfig() // loads default values in oldConfig
         if (mode != Mode.TRAIN && mode != Mode.CONVERT) {
             try {
@@ -422,14 +428,14 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
         setProperty("treeNormalizer", props.getProperty("treeNormalizer", oldConfig.getProperty("treeNormalizer")))
         setProperty("regL1", props.getProperty("regL1", oldConfig.getProperty("regL1")))
 
-        //this is a property that is stored (not like the general properties)
+        // this is a property that is stored (not like the general properties)
         setProperty("xmlInput", props.getProperty("xmlInput", oldConfig.getProperty("xmlInput")).trim { it <= ' ' })
-        setProperty("tagInside", props.getProperty("tagInside", oldConfig.getProperty("tagInside"))) //this isn't something we save from time to time
-        setProperty("approximate", props.getProperty("approximate", oldConfig.getProperty("approximate"))) //this isn't something we save from time to time
-        setProperty("tokenizerOptions", props.getProperty("tokenizerOptions", oldConfig.getProperty("tokenizerOptions"))) //this isn't something we save from time to time
-        setProperty("outputFile", props.getProperty("outputFile", oldConfig.getProperty("outputFile")).trim { it <= ' ' }) //this isn't something we save from time to time
-        setProperty("outputFormat", props.getProperty("outputFormat", oldConfig.getProperty("outputFormat")).trim { it <= ' ' }) //this isn't something we save from time to time
-        setProperty("outputFormatOptions", props.getProperty("outputFormatOptions", oldConfig.getProperty("outputFormatOptions")).trim { it <= ' ' }) //this isn't something we save from time to time
+        setProperty("tagInside", props.getProperty("tagInside", oldConfig.getProperty("tagInside"))) // this isn't something we save from time to time
+        setProperty("approximate", props.getProperty("approximate", oldConfig.getProperty("approximate"))) // this isn't something we save from time to time
+        setProperty("tokenizerOptions", props.getProperty("tokenizerOptions", oldConfig.getProperty("tokenizerOptions"))) // this isn't something we save from time to time
+        setProperty("outputFile", props.getProperty("outputFile", oldConfig.getProperty("outputFile")).trim { it <= ' ' }) // this isn't something we save from time to time
+        setProperty("outputFormat", props.getProperty("outputFormat", oldConfig.getProperty("outputFormat")).trim { it <= ' ' }) // this isn't something we save from time to time
+        setProperty("outputFormatOptions", props.getProperty("outputFormatOptions", oldConfig.getProperty("outputFormatOptions")).trim { it <= ' ' }) // this isn't something we save from time to time
     }
 
     val rareWordThresh: Int
@@ -522,5 +528,4 @@ class TaggerConfig : Properties /* Inherits implementation of serializable! */ {
         dump(pw)
         return sw.toString()
     }
-
 }

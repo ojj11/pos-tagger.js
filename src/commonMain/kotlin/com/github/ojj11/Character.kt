@@ -70,5 +70,4 @@ object Character {
     fun isLetter(ch: Char): Boolean {
         return isLowerCase(ch) || isUpperCase(ch)
     }
-
 }

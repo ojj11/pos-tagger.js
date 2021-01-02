@@ -1,7 +1,5 @@
 package edu.stanford.nlp.tagger.maxent
 
-import edu.stanford.nlp.tagger.maxent.Extractor
-
 /**
  * Extractor for adding distsim information.
  *
@@ -22,7 +20,6 @@ class ExtractorDistsim internal constructor(distSimPath: String, position: Int) 
         companion object {
             private const val serialVersionUID = 1L
         }
-
     } // end static class ExtractorDistsimConjunction
 
     companion object {

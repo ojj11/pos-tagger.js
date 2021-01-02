@@ -4,7 +4,8 @@ import java.io.BufferedInputStream
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
+import java.util.Properties
+import kotlin.collections.ArrayList
 
 private const val PROP = "prop"
 private const val PROPS = "props"

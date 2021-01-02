@@ -1,17 +1,19 @@
 {
-  "name": "stanford-tagger.js",
+  "name": "pos-tagger.js",
   "version": "1.0.0",
-  "description": "The Stanford Part-Of-Speech Log-Linear tagger ported to JavaScript (no background service needed)",
+  "description": "A Kotlin rewrite of the Stanford Part-Of-Speech Log-Linear tagger",
   "main": "lib.js",
+  "types": "lib.d.ts",
   "scripts": {
     "test": "mocha test",
-    "clinic": "clinic"
+    "clinic": "clinic",
+    "pegjs": "pegjs"
   },
   "files": [
     "lib.js",
-    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.js",
-    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.js.map",
-    "build/js/packages/StanfordPOS/kotlin/StanfordPOS.meta.js",
+    "lib.d.ts",
+    "build/js/packages/posTagger/kotlin/posTagger.js",
+    "build/js/packages/posTagger/kotlin/posTagger.d.ts",
     "models/",
     "README.md",
     "LICENSE",
@@ -19,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ojj11/StanfordPOSTagger.git"
+    "url": "git+https://github.com/ojj11/pos-tagger.js"
   },
   "keywords": [
     "nlp",
@@ -30,12 +32,13 @@
   "author": "Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer",
   "license": "GPL-2.0-or-later",
   "bugs": {
-    "url": "https://github.com/ojj11/StanfordPOSTagger/issues"
+    "url": "https://github.com/ojj11/pos-tagger.js/issues"
   },
-  "homepage": "https://github.com/ojj11/StanfordPOSTagger#readme",
+  "homepage": "https://github.com/ojj11/pos-tagger.js#readme",
   "devDependencies": {
     "source-map-support": "0.5.16",
     "mocha": "^8.0.1",
-    "clinic": "^6.0.2"
+    "clinic": "^6.0.2",
+    "pegjs": "^0.10.0"
   }
 }

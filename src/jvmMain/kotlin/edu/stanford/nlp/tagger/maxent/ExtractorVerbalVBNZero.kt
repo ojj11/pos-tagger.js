@@ -1,7 +1,5 @@
 package edu.stanford.nlp.tagger.maxent
 
-import edu.stanford.nlp.tagger.maxent.DictionaryExtractor
-
 /**
  * Look for verbs selecting a VBN verb.
  * This is now a zeroeth order observed data only feature.
@@ -28,5 +26,4 @@ class ExtractorVerbalVBNZero(val bound: Int) : DictionaryExtractor() {
         private val vbnWord = Regex("(?i:have|has|having|had|is|am|are|was|were|be|being|been|'ve|'s|s|'d|'re|'m|gotten|got|gets|get|getting)") // cf. list in EnglishPTBTreebankCorrector
         private const val serialVersionUID = -5881204185400060636L
     }
-
 }

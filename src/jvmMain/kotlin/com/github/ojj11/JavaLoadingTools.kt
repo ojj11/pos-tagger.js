@@ -1,13 +1,46 @@
 package com.github.ojj11
 
 import edu.stanford.nlp.maxent.Convert
-import edu.stanford.nlp.tagger.maxent.*
+import edu.stanford.nlp.tagger.maxent.CompanyNameDetector
+import edu.stanford.nlp.tagger.maxent.DictionaryExtractor
+import edu.stanford.nlp.tagger.maxent.Extractor
+import edu.stanford.nlp.tagger.maxent.ExtractorAllCap
+import edu.stanford.nlp.tagger.maxent.ExtractorAllCapitalized
+import edu.stanford.nlp.tagger.maxent.ExtractorCNumber
+import edu.stanford.nlp.tagger.maxent.ExtractorCWordNextWord
+import edu.stanford.nlp.tagger.maxent.ExtractorCWordPref
+import edu.stanford.nlp.tagger.maxent.ExtractorCWordPrevWord
+import edu.stanford.nlp.tagger.maxent.ExtractorCWordSuff
+import edu.stanford.nlp.tagger.maxent.ExtractorCapDistLC
+import edu.stanford.nlp.tagger.maxent.ExtractorCapLCSeen
+import edu.stanford.nlp.tagger.maxent.ExtractorDash
+import edu.stanford.nlp.tagger.maxent.ExtractorLetterDigitDash
+import edu.stanford.nlp.tagger.maxent.ExtractorMidSentenceCap
+import edu.stanford.nlp.tagger.maxent.ExtractorMidSentenceCapC
+import edu.stanford.nlp.tagger.maxent.ExtractorNextTagWord
+import edu.stanford.nlp.tagger.maxent.ExtractorNextTwoTags
+import edu.stanford.nlp.tagger.maxent.ExtractorPrevTagNextTag
+import edu.stanford.nlp.tagger.maxent.ExtractorPrevTagWord
+import edu.stanford.nlp.tagger.maxent.ExtractorPrevThreeTags
+import edu.stanford.nlp.tagger.maxent.ExtractorPrevTwoTags
+import edu.stanford.nlp.tagger.maxent.ExtractorStartSentenceCap
+import edu.stanford.nlp.tagger.maxent.ExtractorTwoWords
+import edu.stanford.nlp.tagger.maxent.ExtractorUCase
+import edu.stanford.nlp.tagger.maxent.ExtractorUpperDigitDash
+import edu.stanford.nlp.tagger.maxent.ExtractorVerbalVBNZero
+import edu.stanford.nlp.tagger.maxent.ExtractorWordLowerCase
+import edu.stanford.nlp.tagger.maxent.ExtractorWordShapeClassifier
+import edu.stanford.nlp.tagger.maxent.ExtractorWordShapeConjunction
+import edu.stanford.nlp.tagger.maxent.Extractors
+import edu.stanford.nlp.tagger.maxent.ExtractorsConjunction
+import edu.stanford.nlp.tagger.maxent.TaggerConfig
 import java.io.ObjectInputStream
 
 data class UnoptimisedFeature(
-        val extractorIndex: Int,
-        val extractedValue: String,
-        val tag: String)
+    val extractorIndex: Int,
+    val extractedValue: String,
+    val tag: String
+)
 
 object JavaLoadingTools {
 
@@ -21,26 +54,27 @@ object JavaLoadingTools {
         val ySize = rf.readInt()
         val len = rf.readInt()
         val dict = Dictionary(
-                (0 until len).map {
-                    val word = rf.readUTF()
-                    val numTags = rf.readInt()
-                    val tagMap = (0 until numTags).map {
-                        var tag = rf.readUTF()
-                        val count = rf.readInt()
-                        if (tag == "<<NULL>>") {
-                            tag = null
-                        }
-                        tag to count
+            (0 until len).map {
+                val word = rf.readUTF()
+                val numTags = rf.readInt()
+                val tagMap = (0 until numTags).map {
+                    var tag = rf.readUTF()
+                    val count = rf.readInt()
+                    if (tag == "<<NULL>>") {
+                        tag = null
                     }
-                    val existingTags = tagMap.map { it.first }.toTypedArray()
-                    val missingTags = (
-                            deterministicallyExpandTags(config.lang, existingTags).toSet() - existingTags.toSet()).map {
-                        it to 0
-                    }
+                    tag to count
+                }
+                val existingTags = tagMap.map { it.first }.toTypedArray()
+                val missingTags = (
+                    deterministicallyExpandTags(config.lang, existingTags).toSet() - existingTags.toSet()
+                    ).map {
+                    it to 0
+                }
 
-                    val tC = TagCount((tagMap + missingTags).toMap())
-                    word to tC
-                }.toMap()
+                val tC = TagCount((tagMap + missingTags).toMap())
+                word to tC
+            }.toMap()
         )
         val len1 = rf.readInt()
         for (i in 0 until len1) {
@@ -108,21 +142,22 @@ object JavaLoadingTools {
         }
 
         return PureParameters(
-                ySize,
-                PureExtractors(extractors.v.convert()),
-                PureExtractors(extractorsRare.v.convert()),
-                lambda,
-                dict,
-                TTags(tags.toTypedArray(), open.toTypedArray()),
-                config.defaultScore,
-                config.learnClosedClassTags,
-                config.lang,
-                config.rareWordThresh,
-                optimisedFeatures)
+            ySize,
+            PureExtractors(extractors.v.convert()),
+            PureExtractors(extractorsRare.v.convert()),
+            lambda,
+            dict,
+            TTags(tags.toTypedArray(), open.toTypedArray()),
+            config.defaultScore,
+            config.learnClosedClassTags,
+            config.lang,
+            config.rareWordThresh,
+            optimisedFeatures
+        )
     }
 
     private fun convertExtractor(extractor: Extractor): PureExtractor {
-        return when(extractor) {
+        return when (extractor) {
             is ExtractorVerbalVBNZero -> PureExtractorVerbalVBNZero(extractor.bound)
             is ExtractorWordLowerCase -> PureExtractorWordLowerCase(extractor.position)
             is ExtractorTwoWords -> PureExtractorTwoWords(extractor.leftPosition)
@@ -150,8 +185,9 @@ object JavaLoadingTools {
             is ExtractorCWordSuff -> PureExtractorCWordSuff(extractor.num)
             is ExtractorCWordPref -> PureExtractorCWordPref(extractor.num)
             is ExtractorsConjunction -> PureExtractorsConjunction(
-                    convertExtractor(extractor.extractor1),
-                    convertExtractor(extractor.extractor2))
+                convertExtractor(extractor.extractor1),
+                convertExtractor(extractor.extractor2)
+            )
             is ExtractorWordShapeClassifier -> PureExtractorWordShapeClassifier(extractor.position, extractor.wordShaper)
             is ExtractorWordShapeConjunction -> PureExtractorWordShapeConjunction(extractor.left, extractor.right, extractor.wordShaper)
             is DictionaryExtractor -> PureDictionaryExtractor()

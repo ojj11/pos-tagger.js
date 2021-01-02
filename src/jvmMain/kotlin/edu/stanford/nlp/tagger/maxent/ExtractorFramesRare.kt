@@ -78,7 +78,6 @@ internal class ExtractorCapLCSeen(val tag: String?) : Extractor() {
     companion object {
         private const val serialVersionUID = 35L
     }
-
 }
 
 /**
@@ -176,7 +175,6 @@ internal class ExtractorCWordPref(val num: Int) : Extractor() {
     companion object {
         private const val serialVersionUID = 31L
     }
-
 } // end class ExtractorCWordPref
 
 @Suppress("unused")
@@ -187,7 +185,6 @@ internal class ExtractorsConjunction(val extractor1: Extractor, val extractor2: 
     companion object {
         private const val serialVersionUID = 36L
     }
-
 }
 
 @Suppress("unused")
@@ -200,7 +197,6 @@ internal class ExtractorWordShapeClassifier(position: Int, val wordShaper: Int) 
     companion object {
         private const val serialVersionUID = 101L
     }
-
 }
 
 /**
@@ -235,7 +231,6 @@ internal class CtbSufDetector(private val t1: String, n2: Int) : RareExtractor()
         private const val serialVersionUID = 44L
     }
 } // end class ctbPreDetector
-
 
 internal class CtbPreDetector(private val t1: String, n2: Int) : RareExtractor() {
 

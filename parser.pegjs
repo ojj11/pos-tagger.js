@@ -1,5 +1,5 @@
 Sentence "sentence"
-  = sentences:((Characters / Specials / _)* EOS)+
+  = sentences:((Characters / Specials / _)+ EOS?)+
   { return sentences.map(x => x[0].concat(x[1]).filter(x => x != undefined)) }
 
 Specials "special"
