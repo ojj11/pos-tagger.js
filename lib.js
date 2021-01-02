@@ -9,17 +9,11 @@ function Tagger(model) {
 
 Tagger.readModelSync = function(path) {
   return zlib.gunzipSync(fs.readFileSync(__dirname + "/models/" + path + ".cbor.gz"));
-
 }
 
 Tagger.prototype.tag = function(string) {
-    try {
-      const out = parser.parse(string);
-      return out.map(sentence => this.tagger.tag(sentence));
-    } catch(e) {
-      const out = parser.parse(string + ".");
-      return out.map(sentence => this.tagger.tag(sentence));
-    }
+  const out = parser.parse(string);
+  return out.map(sentence => this.tagger.tag(sentence));
 }
 
 module.exports = Tagger;
