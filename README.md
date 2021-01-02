@@ -1,5 +1,7 @@
 # pos-tagger.js
 
+![Build and test the library](https://github.com/ojj11/pos-tagger.js/workflows/Build%20and%20test%20the%20library/badge.svg)
+
 > A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc., although generally computational applications use more fine-grained POS tags like 'noun-plural'.
 
 This is a rewrite of the [Stanford Part-Of-Speech Log-Linear tagger](https://nlp.stanford.edu/software/tagger.shtml) in Kotlin, it is compiled to JavaScript and made available through npm. No background Java service is needed.
