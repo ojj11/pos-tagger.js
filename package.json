@@ -36,7 +36,6 @@
   },
   "homepage": "https://github.com/ojj11/pos-tagger.js#readme",
   "devDependencies": {
-    "source-map-support": "0.5.16",
     "mocha": "^8.2.1",
     "clinic": "^8.0.1",
     "pegjs": "^0.10.0"
