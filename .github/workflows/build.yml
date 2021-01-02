@@ -63,6 +63,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
 
       - name: Download built library
         uses: actions/download-artifact@v2
