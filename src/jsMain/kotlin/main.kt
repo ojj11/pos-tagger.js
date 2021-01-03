@@ -1,11 +1,12 @@
 import com.github.ojj11.MaxentTagger
 import com.github.ojj11.PureParameters
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlin.IllegalStateException
 
 @ExperimentalJsExport
 @JsExport
 /** Exportable copy of [TaggedWord] */
-data class Output(val word: String, var tag: String?)
+data class Output(val word: String, var tag: String)
 
 @ExperimentalJsExport
 @ExperimentalSerializationApi
@@ -19,6 +20,9 @@ class Tagger(bytes: ByteArray) {
     @Suppress("unused")
     @JsName("tag")
     fun tag(words: Array<String>) = tagger.tagSentence(words).map {
-        Output(it.word, it.tag)
+        Output(
+            word = it.word,
+            tag = it.tag ?: throw IllegalStateException("Expected non-null tag for '${it.word}'")
+        )
     }.toTypedArray()
 }
