@@ -12,10 +12,15 @@ This module includes two models:
 
 The total package size (including both models) is under 10mb. Basic benchmarks show that the JavaScript library has similar performance to that of the original Java code for the "left3words" model.
 
-    Author: Olli Jones, Kristina Toutanova, Dan Klein, Christopher Manning, and Yoram Singer
     License: GPL v2 or above
 
 ## Usage
+
+Install pos-tagger.js from [npm](https://www.npmjs.com/pos-tagger.js):
+
+> npm install pos-tagger.js
+
+###### Example code:
 
 ```javascript
 const Tagger = require("pos-tagger.js");
@@ -30,7 +35,7 @@ console.log(output);
 console.log("First word is a " + output[0][0].tag);
 ```
 
-`tag` takes a string representing multiple sentences (where there isn't a terminating ".", one is added). The output is a list with one element per input sentence. Each sentence element is itself a list with an element per input token, each element contains a `word` key with the original token, and a `tag` key which contains the [Penn Treebank part-of-speech tag](https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
+`tag` takes a string representing one or more "." terminated sentences. The output is a list with one element per input sentence. Each sentence element is itself a list with an element per input token, each element contains a `word` key with the original token, and a `tag` key which contains the [Penn Treebank part-of-speech tag](https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html).
 
 ###### Example output:
 

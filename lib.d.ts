@@ -23,7 +23,7 @@ export class Tagger {
      * @param input the document of sentences
      * @returns a list of [[Output]], an object of type `{ word: string, tag: string}`
      */
-    tag(input: string): Array<Output>;
+    tag(input: string): Array<Array<Output>>;
 
     /**
      * load a model synchronously
