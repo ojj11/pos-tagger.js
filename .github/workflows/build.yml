@@ -50,35 +50,3 @@ jobs:
           LICENSE
           parser.js
           package.json
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: NPM
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Node.js 14.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-          registry-url: 'https://registry.npmjs.org'
-          always-auth: true
-
-      - name: Download built library
-        uses: actions/download-artifact@v2
-        with:
-          name: library
-
-      - name: Automated Version Bump
-        uses: phips28/gh-action-bump-version@v7.1.0
-        with:
-          tag-prefix: ""
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish on NPM
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
