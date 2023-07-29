@@ -1,6 +1,6 @@
 {
   "name": "pos-tagger.js",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "A Kotlin rewrite of the Stanford Part-Of-Speech Log-Linear tagger",
   "main": "lib.js",
   "types": "lib.d.ts",
